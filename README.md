@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Employee Management System 🏢
 
-## Getting Started
+A high-performance Site & Personnel Management system built for efficiency, security, and scalability. This application allows Supervisors to oversee multiple sites and Managers to handle day-to-day employee operations with ease.
 
-First, run the development server:
+## ✨ Key Features
 
+### 🔐 Multi-Role Authentication
+- **Supervisor Portal**: Full oversight of all sites, manager assignments, and workforce statistics.
+- **Manager Portal**: Dashboard for specific site management and employee tracking.
+- **Secure Access**: Integrated with **Clerk** for robust role-based access control (RBAC).
+
+### 📍 Site & Workforce Management
+- **Dynamic Site Creation**: Launch new sites instantly with beautiful oversight cards.
+- **Manager Assignment**: Assign and unassign managers to specific sites using unique User IDs.
+- **Employee Directory**: Manage on-site personnel with ease.
+
+### 🎨 Modern User Interface
+- **Premium Aesthetics**: Built with **Next.js 15**, **Tailwind CSS 4**, and **Lucide Icons**.
+- **Intuitive UX**: Micro-interactions, hover states, and clipboard-copy functionality for IDs.
+- **Fully Responsive**: Optimized for both desktop and mobile devices.
+
+## 🛠️ Tech Stack
+
+- **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
+- **Database**: [Neon PostgreSQL](https://neon.tech/)
+- **ORM**: [Drizzle ORM](https://orm.drizzle.team/)
+- **Auth**: [Clerk](https://clerk.com/)
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
+- **Icons**: [Lucide React](https://lucide.dev/)
+
+## 🚀 Getting Started
+
+### 1. Clone the repository
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/your-username/employee-management-system.git
+cd employee-management-system
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Install dependencies
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Set up environment variables
+Create a `.env.local` file in the root directory:
+```env
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_...
+CLERK_SECRET_KEY=sk_...
+DATABASE_URL=postgresql://...
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 4. Push the database schema
+```bash
+npx drizzle-kit push
+```
 
-## Learn More
+### 5. Start the development server
+```bash
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+## 📋 Database Schema
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The system uses a relational schema designed for speed:
+- **`sites`**: Stores site information (name, address).
+- **`site_managers`**: Maps Clerk User IDs to specific sites.
+- **`employees`**: Stores site-specific personnel details.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🤝 Usage
 
-## Deploy on Vercel
+1. **Sign Up**: Create an account via Clerk.
+2. **Assign Roles**: Set the user role to `supervisor` or `manager` in the Clerk Dashboard (Metadata).
+3. **Supervisor**: Use the **Supervisor Portal** to add sites and assign managers (Paste their Clerk User ID into the assignment field).
+4. **Manager**: Access the **Manager Portal** to see your assigned sites and start adding your team members!
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Built with ❤️ by your development assistant.
