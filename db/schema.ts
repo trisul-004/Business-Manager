@@ -1,5 +1,4 @@
-
-import { pgTable, text, uuid, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, text, uuid, timestamp, date, uniqueIndex } from 'drizzle-orm/pg-core';
 
 export const sites = pgTable('sites', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -22,3 +21,13 @@ export const employees = pgTable('employees', {
   role: text('role').notNull(), // Job title e.g. "Security Guard", "Cleaner"
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
+
+export const attendance = pgTable('attendance', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  employeeId: uuid('employee_id').references(() => employees.id).notNull(),
+  date: date('date').notNull(), // The day this attendance is for
+  status: text('status').notNull(), // e.g., 'present', 'absent'
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, (table) => ({
+  onePerDay: uniqueIndex('one_per_day_idx').on(table.employeeId, table.date),
+}));
