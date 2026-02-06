@@ -43,6 +43,7 @@ export async function createEmployee(formData: FormData) {
     const name = formData.get('name') as string;
     const role = formData.get('role') as string;
     const siteId = formData.get('siteId') as string;
+    const faceDescriptor = formData.get('faceDescriptor') as string;
 
     if (!name || !role || !siteId) return;
 
@@ -50,6 +51,7 @@ export async function createEmployee(formData: FormData) {
         name,
         role,
         siteId,
+        faceDescriptor: faceDescriptor || null,
     });
 
     revalidatePath('/manager');

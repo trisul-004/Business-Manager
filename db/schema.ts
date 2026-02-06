@@ -19,6 +19,7 @@ export const employees = pgTable('employees', {
   siteId: uuid('site_id').references(() => sites.id).notNull(),
   name: text('name').notNull(),
   role: text('role').notNull(), // Job title e.g. "Security Guard", "Cleaner"
+  faceDescriptor: text('face_descriptor'), // Stored as JSON string of number[]
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 

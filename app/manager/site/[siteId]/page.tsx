@@ -1,4 +1,5 @@
 import { getEmployees, createEmployee } from "@/actions/employees";
+import AddEmployeeForm from "@/components/AddEmployeeForm";
 import { getAttendanceToday, markAttendance } from "@/actions/attendance";
 import { UserButton } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
@@ -7,7 +8,7 @@ import { sites as sitesTable, siteManagers } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft, Users, UserPlus, MapPin, CheckCircle2, XCircle, Clock } from "lucide-react";
+import { ChevronLeft, Users, UserPlus, MapPin, CheckCircle2, XCircle, Clock, ScanFace } from "lucide-react";
 
 export default async function SiteDashboard({ params }: { params: Promise<{ siteId: string }> }) {
     const { siteId } = await params;
@@ -76,6 +77,13 @@ export default async function SiteDashboard({ params }: { params: Promise<{ site
                         </p>
                     </div>
                     <div className="flex items-center gap-4">
+                        <Link
+                            href={`/manager/site/${siteId}/attendance`}
+                            className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-xl hover:bg-indigo-700 transition-colors font-semibold shadow-sm"
+                        >
+                            <ScanFace className="w-5 h-5" />
+                            Launch Scanner
+                        </Link>
                         <UserButton />
                     </div>
                 </header>
@@ -107,41 +115,7 @@ export default async function SiteDashboard({ params }: { params: Promise<{ site
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Add Employee Form */}
                     <div className="lg:col-span-1">
-                        <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 sticky top-8">
-                            <h2 className="text-2xl font-bold mb-6 text-gray-800 flex items-center gap-2">
-                                <UserPlus className="w-6 h-6 text-green-600" />
-                                Add Member
-                            </h2>
-                            <form action={createEmployee} className="space-y-5">
-                                <input type="hidden" name="siteId" value={siteId} />
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name</label>
-                                    <input
-                                        name="name"
-                                        type="text"
-                                        className="w-full rounded-xl border-gray-200 shadow-sm focus:border-green-500 focus:ring-green-500 py-3 px-4 bg-gray-50 transition-all placeholder:text-gray-400"
-                                        placeholder="e.g. John Smith"
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Job Title / Role</label>
-                                    <input
-                                        name="role"
-                                        type="text"
-                                        placeholder="e.g. Site Supervisor"
-                                        className="w-full rounded-xl border-gray-200 shadow-sm focus:border-green-500 focus:ring-green-500 py-3 px-4 bg-gray-50 transition-all placeholder:text-gray-400"
-                                        required
-                                    />
-                                </div>
-                                <button
-                                    type="submit"
-                                    className="w-full bg-gradient-to-r from-green-600 to-teal-600 text-white py-3 px-6 rounded-xl hover:from-green-700 hover:to-teal-700 transition-all shadow-md font-medium text-lg transform hover:-translate-y-0.5"
-                                >
-                                    Add Employee
-                                </button>
-                            </form>
-                        </div>
+                        <AddEmployeeForm siteId={siteId} />
                     </div>
 
                     {/* Employee List */}
