@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Camera, Package, Construction, Save, X, RefreshCw, Image as ImageIcon, Check, Loader2 } from 'lucide-react';
+import { Camera, Package, Construction, Save, X, RefreshCw, Image as ImageIcon, Check, Loader2, RotateCcw } from "lucide-react";
 import { createAsset } from '@/actions/assets';
 
 interface AddAssetFormProps {
