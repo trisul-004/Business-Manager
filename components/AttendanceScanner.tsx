@@ -1,5 +1,6 @@
 'use client';
 
+import { ChevronLeft, Calendar as CalendarIcon, ScanFace, RefreshCw } from "lucide-react";
 import { useEffect, useRef, useState } from 'react';
 import { loadFaceApiModels, getFaceApi } from '@/utils/faceApi';
 import { markAttendance } from '@/actions/attendance';
@@ -18,7 +19,9 @@ interface AttendanceScannerProps {
 export default function AttendanceScanner({ siteId, employees }: AttendanceScannerProps) {
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [status, setStatus] = useState('Loading models...');
+    const [status, setStatus] = useState('Initializing AI...');
+    const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
+    const [stream, setStream] = useState<MediaStream | null>(null);
     const [lastMarked, setLastMarked] = useState<string | null>(null);
     const matcherRef = useRef<any>(null); // faceapi.FaceMatcher
     const scanningRef = useRef(false);
@@ -53,33 +56,38 @@ export default function AttendanceScanner({ siteId, employees }: AttendanceScann
 
             if (labeledDescriptors.length === 0) {
                 setStatus('No employees with registered faces found.');
-                return; // Can still start camera but won't match anything
+                // Can still start camera but won't match anything
+            } else {
+                matcherRef.current = new faceapi.FaceMatcher(labeledDescriptors, 0.4);
+                setStatus('Ready. Starting camera...');
             }
-
-            matcherRef.current = new faceapi.FaceMatcher(labeledDescriptors, 0.4);
-            setStatus('Ready. Starting camera...');
-            startVideo();
         };
 
         init();
-
-        return () => stopVideo();
     }, [employees]);
 
+    useEffect(() => {
+        startVideo();
+        return () => stopVideo();
+    }, [facingMode]);
+
     const startVideo = async () => {
+        stopVideo(); // Ensure previous stream is stopped
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+            const currentStream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: facingMode }
+            });
+            setStream(currentStream);
             if (videoRef.current) {
-                videoRef.current.srcObject = stream;
-                // Wait for play
+                videoRef.current.srcObject = currentStream;
                 videoRef.current.onloadedmetadata = () => {
                     videoRef.current?.play();
                     startScanning();
                 };
             }
         } catch (err) {
-            console.error(err);
-            setStatus('Camera permission denied.');
+            console.error("Camera error:", err);
+            setStatus('Could not access camera.');
         }
     };
 
@@ -170,31 +178,50 @@ export default function AttendanceScanner({ siteId, employees }: AttendanceScann
     };
 
     return (
-        <div className="flex flex-col items-center gap-4">
-            <div className="flex flex-col items-center bg-black rounded-xl overflow-hidden shadow-2xl w-full max-w-2xl">
-                <div className="relative w-full aspect-video bg-gray-900">
-                    <video
-                        ref={videoRef}
-                        muted
-                        playsInline
-                        className="absolute inset-0 w-full h-full object-cover"
-                    />
-                    <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" />
+        <div className="fixed inset-0 bg-black flex flex-col items-center justify-center p-4 z-50">
+            <div className="relative w-full max-w-lg aspect-[3/4] sm:aspect-video bg-gray-900 rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/10">
+                <video
+                    ref={videoRef}
+                    muted
+                    playsInline
+                    className="absolute inset-0 w-full h-full object-cover"
+                />
+                <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" />
 
-                    {/* Overlay UI */}
-                    <div className="absolute bottom-0 inset-x-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                        <p className="text-white text-center font-semibold text-lg animate-pulse">
+                {/* Status Overlay */}
+                <div className="absolute top-6 inset-x-6 flex flex-col gap-3">
+                    <div className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-4 text-center">
+                        <p className="text-white font-black text-sm uppercase tracking-widest animate-pulse">
                             {status}
                         </p>
+                    </div>
+                </div>
+
+                {/* Camera Switch Button */}
+                <button
+                    onClick={() => setFacingMode(prev => prev === 'user' ? 'environment' : 'user')}
+                    className="absolute top-6 right-6 p-4 bg-white/10 backdrop-blur-2xl border border-white/20 rounded-2xl text-white hover:bg-white/20 transition-all active:scale-90 z-10"
+                >
+                    <RefreshCw className="w-5 h-5" />
+                </button>
+
+                {/* Target Frame UI */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div className="w-64 h-64 border-2 border-indigo-500/50 rounded-3xl relative">
+                        <div className="absolute -top-1 -left-1 w-6 h-6 border-t-4 border-l-4 border-indigo-500 rounded-tl-lg"></div>
+                        <div className="absolute -top-1 -right-1 w-6 h-6 border-t-4 border-r-4 border-indigo-500 rounded-tr-lg"></div>
+                        <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-4 border-l-4 border-indigo-500 rounded-bl-lg"></div>
+                        <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-4 border-r-4 border-indigo-500 rounded-br-lg"></div>
                     </div>
                 </div>
             </div>
 
             <button
                 onClick={() => window.history.back()}
-                className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-full shadow-lg transition-transform hover:scale-105 active:scale-95 flex items-center gap-2"
+                className="mt-8 px-10 py-5 bg-white/10 backdrop-blur-xl border border-white/20 text-white font-black uppercase tracking-widest rounded-3xl hover:bg-white/20 transition-all active:scale-95 flex items-center gap-3"
             >
-                <span>⏹</span> Stop Scanner
+                <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.5)]" />
+                Stop Scanning
             </button>
         </div>
     );

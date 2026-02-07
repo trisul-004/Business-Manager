@@ -115,31 +115,31 @@ export default function AttendanceHistory({ siteId, siteName, employees, initial
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
     return (
-        <div className="min-h-screen bg-gray-50 p-8 font-sans">
+        <div className="min-h-screen bg-gray-50 p-4 md:p-8 font-sans">
             <div className="max-w-7xl mx-auto">
-                <nav className="mb-8">
+                <nav className="mb-6 md:mb-8">
                     <Link
                         href={`/manager/site/${siteId}`}
-                        className="flex items-center gap-1 text-gray-500 hover:text-indigo-600 transition-colors w-fit"
+                        className="flex items-center gap-1 text-gray-500 hover:text-indigo-600 transition-colors w-fit text-sm font-bold"
                     >
                         <ChevronLeft className="w-4 h-4" />
                         Back to Dashboard
                     </Link>
                 </nav>
 
-                <header className="mb-10 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div>
-                        <div className="flex items-center gap-3 mb-1">
-                            <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Attendance History</h1>
-                            <span className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-xs font-bold uppercase">{siteName}</span>
+                <header className="mb-10 bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+                    <div className="w-full lg:w-auto">
+                        <div className="flex items-center justify-between lg:justify-start gap-3 mb-1">
+                            <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight">History</h1>
+                            <span className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-[10px] font-black uppercase tracking-widest border border-indigo-100">{siteName}</span>
                         </div>
-                        <p className="text-gray-500 flex items-center gap-1">
-                            <CalendarIcon className="w-4 h-4" />
+                        <p className="text-gray-500 flex items-center gap-1 text-sm font-medium">
+                            <CalendarIcon className="w-4 h-4 text-indigo-400" />
                             View historical logs and daily statistics
                         </p>
                     </div>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full lg:w-auto">
                         <ExportAttendancePDF
                             siteName={siteName}
                             monthName={monthNames[month]}
@@ -147,14 +147,14 @@ export default function AttendanceHistory({ siteId, siteName, employees, initial
                             employees={employees}
                             attendance={attendance}
                         />
-                        <div className="flex items-center gap-2 bg-gray-100 p-1 rounded-xl">
-                            <button onClick={handlePrevMonth} className="p-2 hover:bg-white rounded-lg transition-all text-gray-600 hover:text-indigo-600">
+                        <div className="flex items-center justify-between bg-gray-100 p-1 rounded-2xl h-12">
+                            <button onClick={handlePrevMonth} className="p-2.5 hover:bg-white rounded-xl transition-all text-gray-600 hover:text-indigo-600">
                                 <ChevronLeft className="w-5 h-5" />
                             </button>
-                            <span className="px-4 font-bold text-gray-800 min-w-32 text-center">
+                            <span className="px-4 font-black text-gray-800 text-xs uppercase tracking-widest min-w-[120px] text-center">
                                 {monthNames[month]} {year}
                             </span>
-                            <button onClick={handleNextMonth} className="p-2 hover:bg-white rounded-lg transition-all text-gray-600 hover:text-indigo-600">
+                            <button onClick={handleNextMonth} className="p-2.5 hover:bg-white rounded-xl transition-all text-gray-600 hover:text-indigo-600">
                                 <ChevronRight className="w-5 h-5" />
                             </button>
                         </div>

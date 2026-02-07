@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import { Camera, Package, Construction, Save, X, RotateCcw, Image as ImageIcon } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Camera, Package, Construction, Save, X, RefreshCw, Image as ImageIcon, Check, Loader2 } from 'lucide-react';
 import { createAsset } from '@/actions/assets';
 
 interface AddAssetFormProps {
@@ -16,32 +16,52 @@ export default function AddAssetForm({ siteId }: AddAssetFormProps) {
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [isCameraOpen, setIsCameraOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [cameraActive, setCameraActive] = useState(false);
+    const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment');
+    const [stream, setStream] = useState<MediaStream | null>(null);
 
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     const startCamera = async () => {
-        setIsCameraOpen(true);
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+            const newStream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: facingMode }
+            });
+            setStream(newStream);
             if (videoRef.current) {
-                videoRef.current.srcObject = stream;
+                videoRef.current.srcObject = newStream;
             }
+            setCameraActive(true);
+            setIsCameraOpen(true); // Ensure camera UI is open
         } catch (err) {
             console.error("Camera error:", err);
             alert("Could not access camera.");
+            setCameraActive(false);
             setIsCameraOpen(false);
         }
     };
 
     const stopCamera = () => {
-        if (videoRef.current && videoRef.current.srcObject) {
-            const stream = videoRef.current.srcObject as MediaStream;
+        if (stream) {
             stream.getTracks().forEach(track => track.stop());
+            setStream(null);
+        }
+        if (videoRef.current) {
             videoRef.current.srcObject = null;
         }
+        setCameraActive(false);
         setIsCameraOpen(false);
     };
+
+    useEffect(() => {
+        if (cameraActive) {
+            startCamera();
+        }
+    }, [facingMode]);
 
     const capturePhoto = () => {
         if (videoRef.current && canvasRef.current) {
@@ -49,7 +69,7 @@ export default function AddAssetForm({ siteId }: AddAssetFormProps) {
             if (context) {
                 canvasRef.current.width = videoRef.current.videoWidth;
                 canvasRef.current.height = videoRef.current.videoHeight;
-                context.drawImage(videoRef.current, 0, 0);
+                context.drawImage(videoRef.current, 0, 0, canvasRef.current.width, canvasRef.current.height);
                 const dataUrl = canvasRef.current.toDataURL('image/jpeg', 0.7);
                 setImageUrl(dataUrl);
                 stopCamera();
@@ -88,18 +108,18 @@ export default function AddAssetForm({ siteId }: AddAssetFormProps) {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
-            <h2 className="text-2xl font-black text-gray-900 mb-6 flex items-center gap-3">
+        <form onSubmit={handleSubmit} className="bg-white p-6 md:p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
+            <h2 className="text-xl md:text-2xl font-black text-gray-900 mb-6 flex items-center gap-3">
                 <Package className="w-6 h-6 text-indigo-600" />
                 Add New Asset
             </h2>
 
             <div className="space-y-6">
-                <div className="flex gap-4 p-1 bg-gray-100 rounded-2xl">
+                <div className="flex gap-2 p-1.5 bg-gray-100 rounded-2xl">
                     <button
                         type="button"
                         onClick={() => setType('material')}
-                        className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold transition-all ${type === 'material' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                        className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl font-black text-xs uppercase tracking-widest transition-all ${type === 'material' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
                     >
                         <Package className="w-4 h-4" />
                         Material
@@ -107,7 +127,7 @@ export default function AddAssetForm({ siteId }: AddAssetFormProps) {
                     <button
                         type="button"
                         onClick={() => setType('machinery')}
-                        className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold transition-all ${type === 'machinery' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                        className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl font-black text-xs uppercase tracking-widest transition-all ${type === 'machinery' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
                     >
                         <Construction className="w-4 h-4" />
                         Machinery
@@ -168,7 +188,20 @@ export default function AddAssetForm({ siteId }: AddAssetFormProps) {
 
                     {isCameraOpen && (
                         <div className="relative rounded-2xl overflow-hidden bg-black aspect-video flex items-center justify-center shadow-2xl">
-                            <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" />
+                            <video
+                                ref={videoRef}
+                                autoPlay
+                                playsInline
+                                className="w-full h-full object-cover"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setFacingMode(prev => prev === 'user' ? 'environment' : 'user')}
+                                className="absolute top-4 right-4 p-3 bg-white/20 backdrop-blur-xl border border-white/30 rounded-2xl text-white hover:bg-white/40 transition-all active:scale-90"
+                            >
+                                <RefreshCw className="w-5 h-5" />
+                            </button>
+                            <div className="absolute inset-0 border-[20px] border-black/20 pointer-events-none" />
                             <div className="absolute bottom-4 inset-x-0 flex justify-center gap-4">
                                 <button
                                     type="button"

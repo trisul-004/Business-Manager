@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { loadFaceApiModels, detectFace, getFaceApi } from '@/utils/faceApi';
+import { RefreshCw } from 'lucide-react';
 
 interface FaceRegistrationProps {
     onDescriptorGenerated: (descriptor: string) => void;
@@ -10,6 +11,7 @@ export default function FaceRegistration({ onDescriptorGenerated }: FaceRegistra
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [stream, setStream] = useState<MediaStream | null>(null);
     const [isModelLoaded, setIsModelLoaded] = useState(false);
+    const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
     const [detecting, setDetecting] = useState(false);
     const [status, setStatus] = useState<string>('Loading models...');
     const [descriptor, setDescriptor] = useState<Float32Array | null>(null);
@@ -33,8 +35,11 @@ export default function FaceRegistration({ onDescriptorGenerated }: FaceRegistra
     }, []);
 
     const startVideo = async () => {
+        stopVideo();
         try {
-            const currentStream = await navigator.mediaDevices.getUserMedia({ video: true });
+            const currentStream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: facingMode }
+            });
             setStream(currentStream);
             if (videoRef.current) {
                 videoRef.current.srcObject = currentStream;
@@ -44,6 +49,12 @@ export default function FaceRegistration({ onDescriptorGenerated }: FaceRegistra
             setStatus('Could not access camera.');
         }
     };
+
+    useEffect(() => {
+        if (isModelLoaded) {
+            startVideo();
+        }
+    }, [facingMode]);
 
     const stopVideo = () => {
         if (stream) {
@@ -99,12 +110,21 @@ export default function FaceRegistration({ onDescriptorGenerated }: FaceRegistra
 
             <div className="relative overflow-hidden rounded-md bg-black w-[320px] h-[240px]">
                 {!descriptor ? (
-                    <video
-                        ref={videoRef}
-                        autoPlay
-                        muted
-                        className="absolute inset-0 w-full h-full object-cover"
-                    />
+                    <>
+                        <video
+                            ref={videoRef}
+                            autoPlay
+                            muted
+                            className="absolute inset-0 w-full h-full object-cover"
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setFacingMode(prev => prev === 'user' ? 'environment' : 'user')}
+                            className="absolute top-3 right-3 p-2.5 bg-white/20 backdrop-blur-xl border border-white/30 rounded-xl text-white hover:bg-white/40 transition-all active:scale-90 z-10"
+                        >
+                            <RefreshCw className="w-4 h-4" />
+                        </button>
+                    </>
                 ) : (
                     <div className="absolute inset-0 flex items-center justify-center bg-gray-800 text-white">
                         <span className="text-4xl">✅</span>

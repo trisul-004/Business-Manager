@@ -38,11 +38,11 @@ export default async function LandingPage() {
             <a href="#reporting" className="hover:text-indigo-600 transition-colors">Reporting</a>
           </div>
 
-          <div className="flex items-center gap-4">
-            <Link href="/sign-in" className="text-sm font-black uppercase tracking-widest text-slate-900 hover:text-indigo-600 transition-colors px-4 py-2">
+          <div className="flex items-center gap-3">
+            <Link href="/sign-in" className="hidden xs:block text-sm font-black uppercase tracking-widest text-slate-900 hover:text-indigo-600 transition-colors px-2">
               Log In
             </Link>
-            <Link href="/sign-up" className="bg-slate-900 text-white px-6 py-3 rounded-2xl text-sm font-black uppercase tracking-widest hover:bg-slate-800 transition-all hover:shadow-xl hover:shadow-slate-200 active:scale-95">
+            <Link href="/sign-up" className="bg-slate-900 text-white px-5 sm:px-6 py-3 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-widest hover:bg-slate-800 transition-all hover:shadow-xl hover:shadow-slate-200 active:scale-95">
               Get Started
             </Link>
           </div>
@@ -61,7 +61,7 @@ export default async function LandingPage() {
               The Next Gen Site Management
             </div>
 
-            <h1 className="text-6xl md:text-8xl font-black text-slate-900 tracking-tight leading-[0.9] mb-8">
+            <h1 className="text-5xl md:text-8xl font-black text-slate-900 tracking-tight leading-[0.9] mb-8">
               Manage your sites<br />
               <span className="text-indigo-600">with precision.</span>
             </h1>
@@ -143,7 +143,7 @@ export default async function LandingPage() {
                   ))}
                 </div>
               </div>
-              <div className="flex-1 grid grid-cols-2 gap-4 w-full">
+              <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
                 <div className="p-8 bg-slate-800 rounded-[2.5rem] border border-slate-700 text-center">
                   <div className="text-4xl font-black mb-2 text-indigo-400">99.8%</div>
                   <div className="text-[10px] font-black uppercase tracking-widest text-slate-500">Matching Accuracy</div>

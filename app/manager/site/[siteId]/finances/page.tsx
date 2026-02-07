@@ -45,31 +45,31 @@ export default async function FinancesPage({ params }: { params: Promise<{ siteI
         .orderBy(desc(financesTable.date), desc(financesTable.createdAt));
 
     return (
-        <div className="min-h-screen bg-gray-50 p-8 font-sans">
+        <div className="min-h-screen bg-gray-50 p-4 md:p-8 font-sans">
             <div className="max-w-7xl mx-auto">
-                <nav className="mb-8">
+                <nav className="mb-6 md:mb-8">
                     <Link
                         href={`/manager/site/${siteId}`}
-                        className="flex items-center gap-1 text-gray-500 hover:text-indigo-600 transition-colors w-fit"
+                        className="flex items-center gap-1 text-gray-500 hover:text-indigo-600 transition-colors w-fit text-sm font-bold"
                     >
                         <ChevronLeft className="w-4 h-4" />
                         Back to Dashboard
                     </Link>
                 </nav>
 
-                <header className="mb-10 bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                    <div>
-                        <div className="flex items-center gap-3 mb-2">
-                            <h1 className="text-4xl font-black text-gray-900 tracking-tight">Finance Management</h1>
-                            <span className="px-4 py-1.5 bg-green-50 text-green-700 rounded-full text-xs font-black uppercase tracking-widest">{site.name}</span>
+                <header className="mb-10 bg-white p-6 md:p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+                    <div className="w-full lg:w-auto">
+                        <div className="flex items-center justify-between lg:justify-start gap-4 mb-2">
+                            <h1 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">Finances</h1>
+                            <span className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-[10px] font-black uppercase tracking-widest border border-green-100">{site.name}</span>
                         </div>
-                        <p className="text-gray-500 flex items-center gap-1.5 font-medium">
+                        <p className="text-gray-500 flex items-center gap-1.5 text-sm font-medium">
                             <MapPin className="w-4 h-4 text-green-400" />
-                            Manage day-to-day cash flow for this location
+                            Manage day-to-day cash flow
                         </p>
                     </div>
 
-                    <div className="flex gap-4">
+                    <div className="w-full lg:w-auto">
                         <ExportFinancePDF transactions={transactions as any} siteName={site.name} />
                     </div>
                 </header>

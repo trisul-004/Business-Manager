@@ -38,34 +38,34 @@ export default async function InventoryPage({ params }: { params: Promise<{ site
     const assets = await getAssets(siteId);
 
     return (
-        <div className="min-h-screen bg-gray-50 p-8 font-sans">
+        <div className="min-h-screen bg-gray-50 p-4 md:p-8 font-sans">
             <div className="max-w-7xl mx-auto">
-                <nav className="mb-8">
+                <nav className="mb-6 md:mb-8">
                     <Link
                         href={`/manager/site/${siteId}`}
-                        className="flex items-center gap-1 text-gray-500 hover:text-indigo-600 transition-colors w-fit"
+                        className="flex items-center gap-1 text-gray-500 hover:text-indigo-600 transition-colors w-fit text-sm font-bold"
                     >
                         <ChevronLeft className="w-4 h-4" />
                         Back to Dashboard
                     </Link>
                 </nav>
 
-                <header className="mb-10 bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                    <div>
-                        <div className="flex items-center gap-3 mb-2">
-                            <h1 className="text-4xl font-black text-gray-900 tracking-tight">Site Inventory</h1>
-                            <span className="px-4 py-1.5 bg-indigo-50 text-indigo-700 rounded-full text-xs font-black uppercase tracking-widest">{site.name}</span>
+                <header className="mb-10 bg-white p-6 md:p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+                    <div className="w-full lg:w-auto">
+                        <div className="flex items-center justify-between lg:justify-start gap-4 mb-2">
+                            <h1 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">Inventory</h1>
+                            <span className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-[10px] font-black uppercase tracking-widest border border-indigo-100">{site.name}</span>
                         </div>
-                        <p className="text-gray-500 flex items-center gap-1.5 font-medium">
+                        <p className="text-gray-500 flex items-center gap-1.5 text-sm font-medium">
                             <MapPin className="w-4 h-4 text-indigo-400" />
-                            Track raw materials and machinery for this location
+                            Track raw materials and machinery
                         </p>
                     </div>
 
-                    <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
-                        <div className="flex-1 bg-gray-100 p-4 rounded-2xl flex items-center gap-3 border border-transparent focus-within:border-indigo-600 focus-within:bg-white transition-all">
+                    <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
+                        <div className="flex-1 bg-gray-100 p-4 rounded-2xl flex items-center gap-3 border border-transparent focus-within:border-indigo-600 focus-within:bg-white transition-all h-14">
                             <Search className="w-5 h-5 text-gray-400" />
-                            <input type="text" placeholder="Search assets..." className="bg-transparent outline-none font-bold text-gray-900 w-full" />
+                            <input type="text" placeholder="Search..." className="bg-transparent outline-none font-black text-xs uppercase tracking-widest text-gray-900 w-full" />
                         </div>
                         <ExportInventoryPDF assets={assets as any} siteName={site.name} />
                     </div>

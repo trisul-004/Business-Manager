@@ -54,59 +54,62 @@ export default async function SiteDashboard({ params }: { params: Promise<{ site
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 p-8 font-sans">
+        <div className="min-h-screen bg-gray-50 p-4 md:p-8 font-sans">
             <div className="max-w-7xl mx-auto">
-                <nav className="mb-8">
+                <nav className="mb-6 md:mb-8">
                     <Link
                         href={role === "supervisor" ? "/supervisor" : "/manager"}
-                        className="flex items-center gap-1 text-gray-500 hover:text-indigo-600 transition-colors w-fit"
+                        className="flex items-center gap-1 text-gray-500 hover:text-indigo-600 transition-colors w-fit text-sm font-bold"
                     >
                         <ChevronLeft className="w-4 h-4" />
                         Back to {role === "supervisor" ? "Supervisor Portal" : "Site Selection"}
                     </Link>
                 </nav>
 
-                <header className="flex justify-between items-center mb-10 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                    <div>
-                        <div className="flex items-center gap-3 mb-1">
-                            <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">{site.name}</h1>
-                            <span className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-xs font-bold uppercase">Active Site</span>
+                <header className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-10 bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                    <div className="w-full lg:w-auto">
+                        <div className="flex items-center justify-between lg:justify-start gap-3 mb-1">
+                            <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight">{site.name}</h1>
+                            <span className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-[10px] font-black uppercase tracking-widest border border-green-100">Active</span>
                         </div>
-                        <p className="text-gray-500 flex items-center gap-1">
-                            <MapPin className="w-4 h-4" />
+                        <p className="text-gray-500 flex items-center gap-1 text-sm font-medium">
+                            <MapPin className="w-4 h-4 text-indigo-400" />
                             {site.address}
                         </p>
                     </div>
-                    <div className="flex items-center gap-4">
+
+                    <div className="grid grid-cols-2 sm:flex sm:items-center gap-3 w-full lg:w-auto">
                         <Link
                             href={`/manager/site/${siteId}/history`}
-                            className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-xl hover:bg-gray-50 transition-colors font-semibold shadow-sm"
+                            className="flex items-center justify-center gap-2 bg-white border border-gray-200 text-gray-700 px-4 py-3 rounded-2xl hover:bg-gray-50 transition-colors font-bold text-xs md:text-sm shadow-sm"
                         >
-                            <CalendarIcon className="w-5 h-5 text-gray-400" />
-                            History
+                            <CalendarIcon className="w-5 h-5 text-indigo-500" />
+                            <span className="sm:inline">History</span>
                         </Link>
                         <Link
                             href={`/manager/site/${siteId}/inventory`}
-                            className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-xl hover:bg-gray-50 transition-colors font-semibold shadow-sm"
+                            className="flex items-center justify-center gap-2 bg-white border border-gray-200 text-gray-700 px-4 py-3 rounded-2xl hover:bg-gray-50 transition-colors font-bold text-xs md:text-sm shadow-sm"
                         >
-                            <Boxes className="w-5 h-5 text-gray-400" />
-                            Inventory
+                            <Boxes className="w-5 h-5 text-emerald-500" />
+                            <span className="sm:inline">Inventory</span>
                         </Link>
                         <Link
                             href={`/manager/site/${siteId}/finances`}
-                            className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-xl hover:bg-gray-50 transition-colors font-semibold shadow-sm"
+                            className="flex items-center justify-center gap-2 bg-white border border-gray-200 text-gray-700 px-4 py-3 rounded-2xl hover:bg-gray-50 transition-colors font-bold text-xs md:text-sm shadow-sm"
                         >
-                            <IndianRupee className="w-5 h-5 text-gray-400" />
-                            Finances
+                            <IndianRupee className="w-5 h-5 text-orange-500" />
+                            <span className="sm:inline">Finances</span>
                         </Link>
                         <Link
                             href={`/manager/site/${siteId}/attendance`}
-                            className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-xl hover:bg-indigo-700 transition-colors font-semibold shadow-sm"
+                            className="col-span-2 sm:col-auto flex items-center justify-center gap-2 bg-indigo-600 text-white px-4 py-3 rounded-2xl hover:bg-indigo-700 transition-all active:scale-95 font-bold text-xs md:text-sm shadow-lg shadow-indigo-100"
                         >
                             <ScanFace className="w-5 h-5" />
-                            Launch Scanner
+                            <span>Scan Face</span>
                         </Link>
-                        <UserButton />
+                        <div className="absolute top-4 right-4 sm:relative sm:top-auto sm:right-auto flex items-center">
+                            <UserButton />
+                        </div>
                     </div>
                 </header>
 
@@ -137,19 +140,25 @@ export default async function SiteDashboard({ params }: { params: Promise<{ site
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Add Employee Form */}
                     <div className="lg:col-span-1">
-                        <AddEmployeeForm siteId={siteId} />
+                        <div className="bg-white p-6 md:p-8 rounded-[2.5rem] shadow-sm border border-gray-100 lg:sticky lg:top-8">
+                            <h2 className="text-xl md:text-2xl font-black mb-6 text-gray-900 flex items-center gap-2">
+                                <UserPlus className="w-6 h-6 text-indigo-600" />
+                                Add Member
+                            </h2>
+                            <AddEmployeeForm siteId={siteId} />
+                        </div>
                     </div>
 
                     {/* Employee List */}
                     <div className="lg:col-span-2">
-                        <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 h-full">
-                            <div className="flex justify-between items-center mb-8">
-                                <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                                    <Users className="w-6 h-6 text-green-600" />
-                                    Employee Directory
+                        <div className="bg-white p-6 md:p-8 rounded-[2.5rem] shadow-sm border border-gray-100 h-full">
+                            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-8">
+                                <h2 className="text-xl md:text-2xl font-black text-gray-900 flex items-center gap-2 leading-tight">
+                                    <Users className="w-6 h-6 text-indigo-600" />
+                                    Directory
                                 </h2>
-                                <span className="bg-gray-100 text-gray-600 px-4 py-1.5 rounded-full text-sm font-bold">
-                                    {siteEmployees.length} Total Members
+                                <span className="bg-gray-100 text-gray-500 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest w-fit">
+                                    {siteEmployees.length} Members
                                 </span>
                             </div>
 
