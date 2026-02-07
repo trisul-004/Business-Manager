@@ -1,5 +1,5 @@
-import { db } from './db';
-import { employees } from './db/schema';
+import { db } from '../db';
+import { employees } from '../db/schema';
 import { sql } from 'drizzle-orm';
 
 async function checkColumn() {
