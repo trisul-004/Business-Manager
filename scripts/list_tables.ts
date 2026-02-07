@@ -9,9 +9,9 @@ async function main() {
         console.log("Tables in database:");
         console.table(result);
 
-        const attendanceColumns = await sql`SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'attendance'`;
-        console.log("\nColumns in 'attendance' table:");
-        console.table(attendanceColumns);
+        const assetsColumns = await sql`SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'assets'`;
+        console.log("\nColumns in 'assets' table:");
+        console.table(assetsColumns);
     } catch (error) {
         console.error("Error connecting to database:", error);
     }

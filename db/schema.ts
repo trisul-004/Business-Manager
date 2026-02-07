@@ -32,3 +32,25 @@ export const attendance = pgTable('attendance', {
 }, (table) => ({
   onePerDay: uniqueIndex('one_per_day_idx').on(table.employeeId, table.date),
 }));
+
+export const assets = pgTable('assets', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  siteId: uuid('site_id').references(() => sites.id).notNull(),
+  name: text('name').notNull(),
+  type: text('type').notNull(), // 'material' or 'machinery'
+  quantity: text('quantity'),
+  description: text('description'),
+  imageUrl: text('image_url'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const finances = pgTable('finances', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  siteId: uuid('site_id').references(() => sites.id).notNull(),
+  amount: text('amount').notNull(), // Amount in cents or decimal string
+  type: text('type').notNull(), // 'income' or 'expense'
+  category: text('category').notNull(),
+  description: text('description'),
+  date: date('date').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});

@@ -9,7 +9,7 @@ import { sites as sitesTable, siteManagers } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft, Users, UserPlus, MapPin, CheckCircle2, XCircle, Clock, ScanFace, Calendar as CalendarIcon } from "lucide-react";
+import { ChevronLeft, Users, UserPlus, MapPin, CheckCircle2, XCircle, Clock, ScanFace, Calendar as CalendarIcon, Boxes, IndianRupee } from "lucide-react";
 
 export default async function SiteDashboard({ params }: { params: Promise<{ siteId: string }> }) {
     const { siteId } = await params;
@@ -84,6 +84,20 @@ export default async function SiteDashboard({ params }: { params: Promise<{ site
                         >
                             <CalendarIcon className="w-5 h-5 text-gray-400" />
                             History
+                        </Link>
+                        <Link
+                            href={`/manager/site/${siteId}/inventory`}
+                            className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-xl hover:bg-gray-50 transition-colors font-semibold shadow-sm"
+                        >
+                            <Boxes className="w-5 h-5 text-gray-400" />
+                            Inventory
+                        </Link>
+                        <Link
+                            href={`/manager/site/${siteId}/finances`}
+                            className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-xl hover:bg-gray-50 transition-colors font-semibold shadow-sm"
+                        >
+                            <IndianRupee className="w-5 h-5 text-gray-400" />
+                            Finances
                         </Link>
                         <Link
                             href={`/manager/site/${siteId}/attendance`}

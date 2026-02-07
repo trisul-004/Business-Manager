@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Users, CheckCircle2, XCircle, Clock, MapPin } from 'lucide-react';
 import { getAttendanceRange } from '@/actions/attendance';
+import ExportAttendancePDF from '@/components/ExportAttendancePDF';
 import Link from 'next/link';
 
 interface Employee {
@@ -138,16 +139,25 @@ export default function AttendanceHistory({ siteId, siteName, employees, initial
                         </p>
                     </div>
 
-                    <div className="flex items-center gap-2 bg-gray-100 p-1 rounded-xl">
-                        <button onClick={handlePrevMonth} className="p-2 hover:bg-white rounded-lg transition-all text-gray-600 hover:text-indigo-600">
-                            <ChevronLeft className="w-5 h-5" />
-                        </button>
-                        <span className="px-4 font-bold text-gray-800 min-w-32 text-center">
-                            {monthNames[month]} {year}
-                        </span>
-                        <button onClick={handleNextMonth} className="p-2 hover:bg-white rounded-lg transition-all text-gray-600 hover:text-indigo-600">
-                            <ChevronRight className="w-5 h-5" />
-                        </button>
+                    <div className="flex items-center gap-4">
+                        <ExportAttendancePDF
+                            siteName={siteName}
+                            monthName={monthNames[month]}
+                            year={year}
+                            employees={employees}
+                            attendance={attendance}
+                        />
+                        <div className="flex items-center gap-2 bg-gray-100 p-1 rounded-xl">
+                            <button onClick={handlePrevMonth} className="p-2 hover:bg-white rounded-lg transition-all text-gray-600 hover:text-indigo-600">
+                                <ChevronLeft className="w-5 h-5" />
+                            </button>
+                            <span className="px-4 font-bold text-gray-800 min-w-32 text-center">
+                                {monthNames[month]} {year}
+                            </span>
+                            <button onClick={handleNextMonth} className="p-2 hover:bg-white rounded-lg transition-all text-gray-600 hover:text-indigo-600">
+                                <ChevronRight className="w-5 h-5" />
+                            </button>
+                        </div>
                     </div>
                 </header>
 
@@ -256,8 +266,8 @@ export default function AttendanceHistory({ siteId, siteName, employees, initial
 
                                             {status ? (
                                                 <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${status === 'present'
-                                                        ? 'bg-green-50 text-green-700 border-green-100'
-                                                        : 'bg-red-50 text-red-700 border-red-100'
+                                                    ? 'bg-green-50 text-green-700 border-green-100'
+                                                    : 'bg-red-50 text-red-700 border-red-100'
                                                     }`}>
                                                     {status}
                                                 </div>
