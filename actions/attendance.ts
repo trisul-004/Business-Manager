@@ -3,7 +3,7 @@
 import { db } from '@/db';
 import { attendance } from '@/db/schema';
 import { revalidatePath } from 'next/cache';
-import { and, eq, sql, inArray } from 'drizzle-orm';
+import { and, eq, sql, inArray, gte, lte } from 'drizzle-orm';
 
 export async function markAttendance(formData: FormData) {
     const employeeId = formData.get('employeeId') as string;
@@ -43,6 +43,21 @@ export async function getAttendanceToday(employeeIds: string[]) {
             and(
                 inArray(attendance.employeeId, employeeIds),
                 eq(attendance.date, today)
+            )
+        );
+}
+
+export async function getAttendanceRange(employeeIds: string[], startDate: string, endDate: string) {
+    if (employeeIds.length === 0) return [];
+
+    return await db
+        .select()
+        .from(attendance)
+        .where(
+            and(
+                inArray(attendance.employeeId, employeeIds),
+                gte(attendance.date, startDate),
+                lte(attendance.date, endDate)
             )
         );
 }

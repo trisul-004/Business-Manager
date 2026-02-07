@@ -1,9 +1,9 @@
 'use server';
 
 import { db } from '@/db';
-import { employees, siteManagers } from '@/db/schema';
+import { employees, siteManagers, attendance } from '@/db/schema';
 import { auth } from '@clerk/nextjs/server';
-import { eq, inArray } from 'drizzle-orm';
+import { eq, inArray, and } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 
 export async function getEmployees(siteId?: string) {
@@ -56,4 +56,30 @@ export async function createEmployee(formData: FormData) {
 
     revalidatePath('/manager');
     revalidatePath('/supervisor');
+}
+
+export async function deleteEmployee(employeeId: string, siteId: string) {
+    const { userId, sessionClaims } = await auth();
+    if (!userId) return { error: "Unauthorized" };
+
+    const role = sessionClaims?.metadata?.role || 'manager';
+
+    // Verify access: Only supervisor can delete
+    if (role !== 'supervisor') {
+        return { error: "Forbidden: Only supervisors can remove employees." };
+    }
+
+    try {
+        // Delete attendance records first
+        await db.delete(attendance).where(eq(attendance.employeeId, employeeId));
+
+        // Delete employee
+        await db.delete(employees).where(eq(employees.id, employeeId));
+
+        revalidatePath(`/manager/site/${siteId}`);
+        return { success: true };
+    } catch (error: any) {
+        console.error("FULL DELETE ERROR:", error);
+        return { error: `Deletion failed: ${error.message || "Unknown error"}` };
+    }
 }

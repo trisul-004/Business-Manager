@@ -56,7 +56,7 @@ export default function AttendanceScanner({ siteId, employees }: AttendanceScann
                 return; // Can still start camera but won't match anything
             }
 
-            matcherRef.current = new faceapi.FaceMatcher(labeledDescriptors, 0.6);
+            matcherRef.current = new faceapi.FaceMatcher(labeledDescriptors, 0.4);
             setStatus('Ready. Starting camera...');
             startVideo();
         };
@@ -113,28 +113,24 @@ export default function AttendanceScanner({ siteId, employees }: AttendanceScann
 
             if (detection) {
                 const bestMatch = matcherRef.current.findBestMatch(detection.descriptor);
+                const confidence = Math.round((1 - bestMatch.distance) * 100);
 
                 if (bestMatch.label !== 'unknown') {
                     const employeeId = bestMatch.label;
                     const employee = employees.find(e => e.id === employeeId);
 
                     if (employee) {
-                        setStatus(`Detected: ${employee.name} (${Math.round((1 - bestMatch.distance) * 100)}%)`);
+                        if (confidence > 70) {
+                            setStatus(`✅ High Confidence: ${employee.name} (${confidence}%)`);
+                        } else {
+                            setStatus(`🔍 Verifying: ${employee.name} (${confidence}%)`);
+                        }
 
-                        // Auto-mark attendance if not recently marked (simple debounce)
-                        // Ideally checking against server state or local "marked this session" list
-                        // For now, we assume if we see them, we try to mark "present"
-
-                        // We don't want to spam the server call, so check state
-                        // However, 'lastMarked' state update might be slow in loop.
-                        // Use a timestamp check or something?
-                        // For simplicity, let's just show success message for now in status.
-
-                        // To actually mark:
+                        // Auto-mark attendance
                         await handleMarkAttendance(employeeId, employee.name);
                     }
                 } else {
-                    setStatus('Face detected but not recognized.');
+                    setStatus(`❓ Not Recognized (${confidence}%)`);
                 }
             } else {
                 setStatus('Scanning...');

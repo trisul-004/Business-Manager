@@ -1,5 +1,6 @@
 import { getEmployees, createEmployee } from "@/actions/employees";
 import AddEmployeeForm from "@/components/AddEmployeeForm";
+import DeleteEmployeeButton from "@/components/DeleteEmployeeButton";
 import { getAttendanceToday, markAttendance } from "@/actions/attendance";
 import { UserButton } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
@@ -8,7 +9,7 @@ import { sites as sitesTable, siteManagers } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft, Users, UserPlus, MapPin, CheckCircle2, XCircle, Clock, ScanFace } from "lucide-react";
+import { ChevronLeft, Users, UserPlus, MapPin, CheckCircle2, XCircle, Clock, ScanFace, Calendar as CalendarIcon } from "lucide-react";
 
 export default async function SiteDashboard({ params }: { params: Promise<{ siteId: string }> }) {
     const { siteId } = await params;
@@ -42,13 +43,13 @@ export default async function SiteDashboard({ params }: { params: Promise<{ site
     const todayAttendance = await getAttendanceToday(employeeIds);
 
     // Create a map for quick lookup
-    const attendanceMap = new Map(todayAttendance.map(a => [a.employeeId, a.status]));
+    const attendanceMap = new Map<string, string>(todayAttendance.map((a: { employeeId: string; status: string }) => [a.employeeId, a.status]));
 
     // Calculate Summary Stats
     const summary = {
         total: siteEmployees.length,
-        present: todayAttendance.filter(a => a.status === 'present').length,
-        absent: todayAttendance.filter(a => a.status === 'absent').length,
+        present: todayAttendance.filter((a: { status: string }) => a.status === 'present').length,
+        absent: todayAttendance.filter((a: { status: string }) => a.status === 'absent').length,
         pending: siteEmployees.length - todayAttendance.length
     };
 
@@ -77,6 +78,13 @@ export default async function SiteDashboard({ params }: { params: Promise<{ site
                         </p>
                     </div>
                     <div className="flex items-center gap-4">
+                        <Link
+                            href={`/manager/site/${siteId}/history`}
+                            className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-xl hover:bg-gray-50 transition-colors font-semibold shadow-sm"
+                        >
+                            <CalendarIcon className="w-5 h-5 text-gray-400" />
+                            History
+                        </Link>
                         <Link
                             href={`/manager/site/${siteId}/attendance`}
                             className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-xl hover:bg-indigo-700 transition-colors font-semibold shadow-sm"
@@ -152,41 +160,51 @@ export default async function SiteDashboard({ params }: { params: Promise<{ site
                                                     </div>
                                                 </div>
 
-                                                <div className="flex items-center gap-3 w-full md:w-auto">
-                                                    {status ? (
-                                                        <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border font-bold text-sm ${status === 'present'
-                                                            ? 'bg-green-50 border-green-200 text-green-700'
-                                                            : 'bg-red-50 border-red-200 text-red-700'
-                                                            }`}>
-                                                            {status === 'present' ? <CheckCircle2 className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
-                                                            {status.toUpperCase()}
-                                                        </div>
-                                                    ) : (
-                                                        <div className="flex items-center gap-2 w-full">
-                                                            <form action={markAttendance} className="flex gap-2 w-full">
-                                                                <input type="hidden" name="employeeId" value={emp.id} />
-                                                                <input type="hidden" name="siteId" value={siteId} />
-                                                                <button
-                                                                    name="status"
-                                                                    value="present"
-                                                                    type="submit"
-                                                                    className="flex-1 md:flex-none flex items-center justify-center gap-1.5 px-4 py-2 bg-white border border-green-200 text-green-600 rounded-xl hover:bg-green-50 transition-colors font-bold text-xs shadow-sm"
-                                                                >
-                                                                    <CheckCircle2 className="w-3.5 h-3.5" />
-                                                                    Present
-                                                                </button>
-                                                                <button
-                                                                    name="status"
-                                                                    value="absent"
-                                                                    type="submit"
-                                                                    className="flex-1 md:flex-none flex items-center justify-center gap-1.5 px-4 py-2 bg-white border border-red-200 text-red-600 rounded-xl hover:bg-red-50 transition-colors font-bold text-xs shadow-sm"
-                                                                >
-                                                                    <XCircle className="w-3.5 h-3.5" />
-                                                                    Absent
-                                                                </button>
-                                                            </form>
-                                                        </div>
+                                                <div className="flex items-center gap-4">
+                                                    {role === 'supervisor' && (
+                                                        <DeleteEmployeeButton
+                                                            employeeId={emp.id}
+                                                            employeeName={emp.name}
+                                                            siteId={siteId}
+                                                        />
                                                     )}
+
+                                                    <div className="flex items-center gap-3 w-full md:w-auto">
+                                                        {status ? (
+                                                            <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border font-bold text-sm ${status === 'present'
+                                                                ? 'bg-green-50 border-green-200 text-green-700'
+                                                                : 'bg-red-50 border-red-200 text-red-700'
+                                                                }`}>
+                                                                {status === 'present' ? <CheckCircle2 className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
+                                                                {String(status).toUpperCase()}
+                                                            </div>
+                                                        ) : (
+                                                            <div className="flex items-center gap-2 w-full">
+                                                                <form action={markAttendance} className="flex gap-2 w-full">
+                                                                    <input type="hidden" name="employeeId" value={emp.id} />
+                                                                    <input type="hidden" name="siteId" value={siteId} />
+                                                                    <button
+                                                                        name="status"
+                                                                        value="present"
+                                                                        type="submit"
+                                                                        className="flex-1 md:flex-none flex items-center justify-center gap-1.5 px-4 py-2 bg-white border border-green-200 text-green-600 rounded-xl hover:bg-green-50 transition-colors font-bold text-xs shadow-sm"
+                                                                    >
+                                                                        <CheckCircle2 className="w-3.5 h-3.5" />
+                                                                        Present
+                                                                    </button>
+                                                                    <button
+                                                                        name="status"
+                                                                        value="absent"
+                                                                        type="submit"
+                                                                        className="flex-1 md:flex-none flex items-center justify-center gap-1.5 px-4 py-2 bg-white border border-red-200 text-red-600 rounded-xl hover:bg-red-50 transition-colors font-bold text-xs shadow-sm"
+                                                                    >
+                                                                        <XCircle className="w-3.5 h-3.5" />
+                                                                        Absent
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </div>
                                         );
