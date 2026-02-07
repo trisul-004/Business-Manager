@@ -92,7 +92,7 @@ export default function AddTransactionForm({ siteId }: AddTransactionFormProps) 
                             value={amount}
                             onChange={(e) => setAmount(e.target.value)}
                             placeholder="0.00"
-                            className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-600 outline-none transition-all font-bold text-lg"
+                            className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-600 outline-none transition-all font-bold text-lg text-gray-900"
                         />
                     </div>
                     <div>
@@ -104,7 +104,7 @@ export default function AddTransactionForm({ siteId }: AddTransactionFormProps) 
                                 required
                                 value={date}
                                 onChange={(e) => setDate(e.target.value)}
-                                className="w-full pl-11 pr-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-600 outline-none transition-all font-bold"
+                                className="w-full pl-11 pr-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-600 outline-none transition-all font-bold text-gray-900"
                             />
                         </div>
                     </div>
@@ -115,7 +115,7 @@ export default function AddTransactionForm({ siteId }: AddTransactionFormProps) 
                     <select
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
-                        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-600 outline-none transition-all font-bold appearance-none"
+                        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-600 outline-none transition-all font-bold appearance-none text-gray-900"
                     >
                         {CATEGORIES.map(cat => (
                             <option key={cat} value={cat}>{cat}</option>
@@ -130,7 +130,7 @@ export default function AddTransactionForm({ siteId }: AddTransactionFormProps) 
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="Add a remark..."
                         rows={3}
-                        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-600 outline-none transition-all font-bold resize-none"
+                        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-600 outline-none transition-all font-bold resize-none text-gray-900"
                     />
                 </div>
 

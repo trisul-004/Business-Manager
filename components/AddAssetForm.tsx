@@ -122,7 +122,7 @@ export default function AddAssetForm({ siteId }: AddAssetFormProps) {
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder={type === 'material' ? 'e.g. Cement, Bricks' : 'e.g. Concrete Mixer, Drill'}
-                        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-600 outline-none transition-all font-bold"
+                        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-600 outline-none transition-all font-bold text-gray-900"
                     />
                 </div>
 
@@ -134,7 +134,7 @@ export default function AddAssetForm({ siteId }: AddAssetFormProps) {
                             value={quantity}
                             onChange={(e) => setQuantity(e.target.value)}
                             placeholder="e.g. 50 bags, 2 units"
-                            className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-600 outline-none transition-all font-bold"
+                            className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-600 outline-none transition-all font-bold text-gray-900"
                         />
                     </div>
                 </div>
@@ -146,7 +146,7 @@ export default function AddAssetForm({ siteId }: AddAssetFormProps) {
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="Add some details about the asset..."
                         rows={3}
-                        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-600 outline-none transition-all font-bold resize-none"
+                        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-600 outline-none transition-all font-bold resize-none text-gray-900"
                     />
                 </div>
 

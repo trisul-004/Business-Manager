@@ -40,7 +40,7 @@ export default async function SupervisorDashboard() {
                                         name="name"
                                         type="text"
                                         placeholder="e.g. West Campus"
-                                        className="w-full rounded-xl border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-3 px-4 bg-gray-50 transition-all font-medium placeholder:text-gray-400"
+                                        className="w-full rounded-xl border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-3 px-4 bg-gray-50 text-gray-900 transition-all font-medium placeholder:text-gray-400"
                                         required
                                     />
                                 </div>
@@ -50,7 +50,7 @@ export default async function SupervisorDashboard() {
                                         name="address"
                                         type="text"
                                         placeholder="Full Location"
-                                        className="w-full rounded-xl border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-3 px-4 bg-gray-50 transition-all font-medium placeholder:text-gray-400"
+                                        className="w-full rounded-xl border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-3 px-4 bg-gray-50 text-gray-900 transition-all font-medium placeholder:text-gray-400"
                                         required
                                     />
                                 </div>
@@ -182,7 +182,7 @@ function AssignManagerForm({ siteId }: { siteId: string }) {
                     type="text"
                     name="userId"
                     placeholder="e.g. user_2n..."
-                    className="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 text-xs focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder:text-gray-400 font-medium"
+                    className="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 text-xs text-gray-900 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder:text-gray-400 font-medium"
                     required
                 />
                 <button
