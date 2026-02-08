@@ -8,6 +8,7 @@ import { ChevronLeft, Package, Boxes, Construction, MapPin, Search } from "lucid
 import AddAssetForm from "@/components/AddAssetForm";
 import AssetList from "@/components/AssetList";
 import ExportInventoryPDF from "@/components/ExportInventoryPDF";
+import NotificationBell from "@/components/NotificationBell";
 import { getAssets } from "@/actions/assets";
 
 export default async function InventoryPage({ params }: { params: Promise<{ siteId: string }> }) {
@@ -62,12 +63,15 @@ export default async function InventoryPage({ params }: { params: Promise<{ site
                         </p>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
+                    <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto items-center">
                         <div className="flex-1 bg-gray-100 p-4 rounded-2xl flex items-center gap-3 border border-transparent focus-within:border-indigo-600 focus-within:bg-white transition-all h-14">
                             <Search className="w-5 h-5 text-gray-400" />
                             <input type="text" placeholder="Search..." className="bg-transparent outline-none font-black text-xs uppercase tracking-widest text-gray-900 w-full" />
                         </div>
-                        <ExportInventoryPDF assets={assets as any} siteName={site.name} />
+                        <div className="flex items-center gap-3 w-full sm:w-auto">
+                            <NotificationBell siteId={siteId} />
+                            <ExportInventoryPDF assets={assets as any} siteName={site.name} />
+                        </div>
                     </div>
                 </header>
 

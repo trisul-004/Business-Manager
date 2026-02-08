@@ -39,23 +39,40 @@ export async function getEmployees(siteId?: string) {
     return await db.select().from(employees).where(inArray(employees.siteId, siteIds));
 }
 
+import { createNotification } from './notifications';
+
 export async function createEmployee(formData: FormData) {
     const name = formData.get('name') as string;
     const role = formData.get('role') as string;
     const siteId = formData.get('siteId') as string;
     const faceDescriptor = formData.get('faceDescriptor') as string;
 
-    if (!name || !role || !siteId) return;
+    if (!name || !role || !siteId) return { error: "Missing required fields" };
 
-    await db.insert(employees).values({
-        name,
-        role,
-        siteId,
-        faceDescriptor: faceDescriptor || null,
-    });
+    try {
+        await db.insert(employees).values({
+            name,
+            role,
+            siteId,
+            faceDescriptor: faceDescriptor || null,
+        });
 
-    revalidatePath('/manager');
-    revalidatePath('/supervisor');
+        await createNotification(
+            siteId,
+            'New Employee Added',
+            `${name} has been registered as ${role}.`,
+            'employee'
+        );
+
+        revalidatePath('/manager');
+        revalidatePath('/supervisor');
+        revalidatePath(`/manager/site/${siteId}`);
+
+        return { success: true };
+    } catch (error: any) {
+        console.error("Failed to create employee:", error);
+        return { error: `Failed to create employee: ${error.message}` };
+    }
 }
 
 export async function deleteEmployee(employeeId: string, siteId: string) {

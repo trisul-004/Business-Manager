@@ -5,6 +5,7 @@ import { finances } from '@/db/schema';
 import { auth } from '@clerk/nextjs/server';
 import { eq, and, gte, lte } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
+import { createNotification } from './notifications';
 
 export async function getTransactions(siteId: string, startDate?: string, endDate?: string) {
     const { userId } = await auth();
@@ -55,6 +56,13 @@ export async function createTransaction(formData: FormData) {
             description: description || null,
             date,
         });
+
+        await createNotification(
+            siteId,
+            `New ${type === 'income' ? 'Income' : 'Expense'} Logged`,
+            `${category}: ₹${parseFloat(amount).toLocaleString()}`,
+            'finance'
+        );
 
         revalidatePath(`/manager/site/${siteId}/finances`);
         return { success: true };

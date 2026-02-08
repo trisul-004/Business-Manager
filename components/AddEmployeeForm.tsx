@@ -8,6 +8,33 @@ import { UserPlus, ChevronDown, ChevronUp } from "lucide-react";
 export default function AddEmployeeForm({ siteId }: { siteId: string }) {
     const [faceDescriptor, setFaceDescriptor] = useState<string>('');
     const [showCamera, setShowCamera] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [status, setStatus] = useState<{ type: 'success' | 'error', message: string } | null>(null);
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        setStatus(null);
+
+        const formData = new FormData(e.currentTarget);
+        formData.append('faceDescriptor', faceDescriptor);
+
+        try {
+            const result = await createEmployee(formData);
+            if (result?.success) {
+                setStatus({ type: 'success', message: 'Member added successfully!' });
+                setFaceDescriptor('');
+                setShowCamera(false);
+                (e.target as HTMLFormElement).reset();
+            } else {
+                setStatus({ type: 'error', message: result?.error || 'Failed to add member' });
+            }
+        } catch (err) {
+            setStatus({ type: 'error', message: 'An unexpected error occurred' });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     return (
         <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 sticky top-8">
@@ -15,9 +42,8 @@ export default function AddEmployeeForm({ siteId }: { siteId: string }) {
                 <UserPlus className="w-6 h-6 text-green-600" />
                 Add Member
             </h2>
-            <form action={createEmployee} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-5">
                 <input type="hidden" name="siteId" value={siteId} />
-                <input type="hidden" name="faceDescriptor" value={faceDescriptor} />
 
                 <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name</label>
@@ -54,8 +80,6 @@ export default function AddEmployeeForm({ siteId }: { siteId: string }) {
                         <div className="mb-4">
                             <FaceRegistration onDescriptorGenerated={(desc) => {
                                 setFaceDescriptor(desc);
-                                // Optional: Hide camera after success if you want
-                                // setShowCamera(false); 
                             }} />
                         </div>
                     )}
@@ -67,11 +91,18 @@ export default function AddEmployeeForm({ siteId }: { siteId: string }) {
                     )}
                 </div>
 
+                {status && (
+                    <div className={`p-4 rounded-xl text-sm font-bold flex items-center gap-2 ${status.type === 'success' ? 'bg-green-50 text-green-700 border border-green-100' : 'bg-red-50 text-red-700 border border-red-100'}`}>
+                        {status.type === 'success' ? '✓' : '⚠'} {status.message}
+                    </div>
+                )}
+
                 <button
                     type="submit"
-                    className="w-full bg-gradient-to-r from-green-600 to-teal-600 text-white py-3 px-6 rounded-xl hover:from-green-700 hover:to-teal-700 transition-all shadow-md font-medium text-lg transform hover:-translate-y-0.5"
+                    disabled={isSubmitting}
+                    className="w-full bg-gradient-to-r from-green-600 to-teal-600 text-white py-3 px-6 rounded-xl hover:from-green-700 hover:to-teal-700 transition-all shadow-md font-medium text-lg transform hover:-translate-y-0.5 disabled:opacity-50 disabled:transform-none"
                 >
-                    Add Employee
+                    {isSubmitting ? 'Adding...' : 'Add Employee'}
                 </button>
             </form>
         </div>

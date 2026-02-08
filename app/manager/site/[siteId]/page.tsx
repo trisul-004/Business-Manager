@@ -10,6 +10,7 @@ import { eq, and } from "drizzle-orm";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft, Users, UserPlus, MapPin, CheckCircle2, XCircle, Clock, ScanFace, Calendar as CalendarIcon, Boxes, IndianRupee } from "lucide-react";
+import NotificationBell from "@/components/NotificationBell";
 
 export default async function SiteDashboard({ params }: { params: Promise<{ siteId: string }> }) {
     const { siteId } = await params;
@@ -106,7 +107,8 @@ export default async function SiteDashboard({ params }: { params: Promise<{ site
                             <IndianRupee className="w-5 h-5 text-orange-500" />
                             <span className="sm:inline">Finances</span>
                         </Link>
-                        <div className="absolute top-4 right-4 sm:relative sm:top-auto sm:right-auto flex items-center">
+                        <div className="absolute top-4 right-4 sm:relative sm:top-auto sm:right-auto flex items-center gap-3">
+                            <NotificationBell siteId={siteId} />
                             <UserButton />
                         </div>
                     </div>

@@ -27,6 +27,7 @@ export default function AddTransactionForm({ siteId }: AddTransactionFormProps) 
     const [description, setDescription] = useState('');
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [status, setStatus] = useState<{ type: 'success' | 'error', message: string } | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -45,12 +46,12 @@ export default function AddTransactionForm({ siteId }: AddTransactionFormProps) 
             if (result.success) {
                 setAmount('');
                 setDescription('');
-                alert("Transaction logged successfully!");
+                setStatus({ type: 'success', message: 'Transaction logged successfully' });
             } else {
-                alert(result.error);
+                setStatus({ type: 'error', message: result.error || 'Failed to log transaction' });
             }
         } catch (error) {
-            alert("Failed to log transaction.");
+            setStatus({ type: 'error', message: 'An unexpected error occurred' });
         } finally {
             setIsSubmitting(false);
         }
@@ -133,6 +134,13 @@ export default function AddTransactionForm({ siteId }: AddTransactionFormProps) 
                         className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-600 outline-none transition-all font-bold resize-none text-gray-900"
                     />
                 </div>
+
+                {status && (
+                    <div className={`p-4 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-3 ${status.type === 'success' ? 'bg-green-50 text-green-700 border border-green-100' : 'bg-red-50 text-red-700 border border-red-100'}`}>
+                        {status.type === 'success' ? <PlusCircle className="w-4 h-4" /> : <X className="w-4 h-4" />}
+                        {status.message}
+                    </div>
+                )}
 
                 <button
                     type="submit"

@@ -56,3 +56,13 @@ export const finances = pgTable('finances', {
   date: date('date').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
+
+export const notifications = pgTable('notifications', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  siteId: uuid('site_id').references(() => sites.id).notNull(),
+  title: text('title').notNull(),
+  message: text('message').notNull(),
+  type: text('type').notNull(), // 'employee', 'asset', 'finance'
+  isRead: text('is_read').default('false').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});

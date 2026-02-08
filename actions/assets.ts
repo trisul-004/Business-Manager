@@ -6,6 +6,8 @@ import { auth } from '@clerk/nextjs/server';
 import { eq, and } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 
+import { createNotification } from './notifications';
+
 export async function getAssets(siteId: string) {
     const { userId } = await auth();
     if (!userId) return [];
@@ -40,6 +42,13 @@ export async function createAsset(formData: FormData) {
             description: description || null,
             imageUrl: imageUrl || null,
         });
+
+        await createNotification(
+            siteId,
+            'New Asset Added',
+            `${name} has been added to inventory (${type}).`,
+            'asset'
+        );
 
         revalidatePath(`/manager/site/${siteId}/inventory`);
         return { success: true };

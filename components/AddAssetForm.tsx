@@ -23,6 +23,8 @@ export default function AddAssetForm({ siteId }: AddAssetFormProps) {
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
+    const [status, setStatus] = useState<{ type: 'success' | 'error', message: string } | null>(null);
+
     const startCamera = async () => {
         if (stream) {
             stream.getTracks().forEach(track => track.stop());
@@ -96,12 +98,12 @@ export default function AddAssetForm({ siteId }: AddAssetFormProps) {
                 setQuantity('');
                 setDescription('');
                 setImageUrl(null);
-                alert("Asset added successfully!");
+                setStatus({ type: 'success', message: 'Asset added successfully' });
             } else {
-                alert(result.error);
+                setStatus({ type: 'error', message: result.error || 'Failed to add asset' });
             }
         } catch (error) {
-            alert("Failed to add asset.");
+            setStatus({ type: 'error', message: 'An unexpected error occurred' });
         } finally {
             setIsSubmitting(false);
         }
@@ -248,6 +250,13 @@ export default function AddAssetForm({ siteId }: AddAssetFormProps) {
                     )}
                     <canvas ref={canvasRef} className="hidden" />
                 </div>
+
+                {status && (
+                    <div className={`p-4 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center gap-3 ${status.type === 'success' ? 'bg-green-50 text-green-700 border border-green-100' : 'bg-red-50 text-red-700 border border-red-100'}`}>
+                        {status.type === 'success' ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />}
+                        {status.message}
+                    </div>
+                )}
 
                 <button
                     type="submit"
