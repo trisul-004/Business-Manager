@@ -115,7 +115,7 @@ export default async function SupervisorDashboard() {
                                                                     </div>
                                                                 </div>
 
-                                                                <form action={removeManager} className="opacity-0 group-hover/manager:opacity-100 transition-opacity">
+                                                                <form action={removeManager} className="opacity-100 lg:opacity-0 lg:group-hover/manager:opacity-100 transition-opacity">
                                                                     <input type="hidden" name="siteId" value={site.id} />
                                                                     <input type="hidden" name="userId" value={m.userId} />
                                                                     <button

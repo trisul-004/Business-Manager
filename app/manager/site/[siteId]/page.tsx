@@ -12,6 +12,7 @@ import Link from "next/link";
 import { ChevronLeft, Users, UserPlus, MapPin, CheckCircle2, XCircle, Clock, ScanFace, Calendar as CalendarIcon, Boxes, IndianRupee } from "lucide-react";
 import NotificationBell from "@/components/NotificationBell";
 import { formatTime } from "@/utils/format";
+import DeleteSiteButton from "@/components/DeleteSiteButton";
 
 export default async function SiteDashboard({ params }: { params: Promise<{ siteId: string }> }) {
     const { siteId } = await params;
@@ -159,6 +160,22 @@ export default async function SiteDashboard({ params }: { params: Promise<{ site
                     </div>
                 </div>
             </div>
+
+            {
+                role === 'supervisor' && (
+                    <div className="max-w-7xl mx-auto mt-12 bg-red-50 p-8 rounded-3xl border border-red-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                        <div>
+                            <h3 className="text-red-900 font-bold text-lg flex items-center gap-2">
+                                Danger Zone
+                            </h3>
+                            <p className="text-red-700 text-sm mt-1">
+                                Deleting this site will permanently remove all associated data including employees, attendance, and financial records. This action cannot be undone.
+                            </p>
+                        </div>
+                        <DeleteSiteButton siteId={siteId} siteName={site.name} />
+                    </div>
+                )
+            }
         </div>
     );
 }

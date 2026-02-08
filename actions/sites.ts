@@ -1,10 +1,11 @@
 'use server';
 
 import { db } from '@/db';
-import { sites, siteManagers, employees } from '@/db/schema';
+import { sites, siteManagers, employees, attendance, assets, finances, notifications } from '@/db/schema';
 import { revalidatePath } from 'next/cache';
-import { sql, eq, and } from 'drizzle-orm';
+import { sql, eq, and, inArray } from 'drizzle-orm';
 import { createClerkClient } from '@clerk/nextjs/server';
+import { auth } from "@clerk/nextjs/server";
 
 
 export async function removeManager(formData: FormData) {
@@ -82,4 +83,47 @@ export async function assignManager(formData: FormData) {
     });
 
     revalidatePath('/supervisor');
+}
+
+export async function deleteSite(siteId: string) {
+    const { sessionClaims } = await auth();
+    const role = sessionClaims?.metadata?.role;
+
+    if (role !== 'supervisor') {
+        throw new Error("Unauthorized: Only supervisors can delete sites.");
+    }
+
+    try {
+        // 1. Delete Notifications
+        await db.delete(notifications).where(eq(notifications.siteId, siteId));
+
+        // 2. Delete Finances
+        await db.delete(finances).where(eq(finances.siteId, siteId));
+
+        // 3. Delete Assets
+        await db.delete(assets).where(eq(assets.siteId, siteId));
+
+        // 4. Delete Attendance (Needs employee IDs)
+        const siteEmployees = await db.select({ id: employees.id }).from(employees).where(eq(employees.siteId, siteId));
+        const employeeIds = siteEmployees.map(e => e.id);
+
+        if (employeeIds.length > 0) {
+            await db.delete(attendance).where(inArray(attendance.employeeId, employeeIds));
+        }
+
+        // 5. Delete Employees
+        await db.delete(employees).where(eq(employees.siteId, siteId));
+
+        // 6. Delete Site Managers
+        await db.delete(siteManagers).where(eq(siteManagers.siteId, siteId));
+
+        // 7. Delete Site
+        await db.delete(sites).where(eq(sites.id, siteId));
+
+        revalidatePath('/supervisor');
+        return { success: true };
+    } catch (error: any) {
+        console.error("Failed to delete site:", error);
+        return { success: false, error: error.message };
+    }
 }
