@@ -22,12 +22,16 @@ export default function AttendanceScanner({ siteId, employees }: AttendanceScann
     const [status, setStatus] = useState('Initializing AI...');
     const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
     const [stream, setStream] = useState<MediaStream | null>(null);
-    const [lastMarked, setLastMarked] = useState<string | null>(null);
+    const [isAIReady, setIsAIReady] = useState(false);
+    const lastMarkedRef = useRef<string | null>(null);
     const matcherRef = useRef<any>(null); // faceapi.FaceMatcher
     const scanningRef = useRef(false);
 
+    // 1. Initialize AI Models & Matcher
     useEffect(() => {
-        const init = async () => {
+        let isMounted = true;
+        const initAI = async () => {
+            console.log("Scanner: Starting AI initialization...");
             const faceapi = await getFaceApi();
             if (!faceapi) {
                 setStatus('Failed to load FaceAPI.');
@@ -39,6 +43,8 @@ export default function AttendanceScanner({ siteId, employees }: AttendanceScann
                 setStatus('Failed to load detection models.');
                 return;
             }
+
+            if (!isMounted) return;
 
             // Prepare Matcher
             const labeledDescriptors = employees
@@ -55,34 +61,46 @@ export default function AttendanceScanner({ siteId, employees }: AttendanceScann
                 .filter(d => d !== null);
 
             if (labeledDescriptors.length === 0) {
-                setStatus('No employees with registered faces found.');
-                // Can still start camera but won't match anything
+                console.warn("Scanner: No employee descriptors found");
+                setStatus('No employee faces registered.');
             } else {
                 matcherRef.current = new faceapi.FaceMatcher(labeledDescriptors, 0.4);
-                setStatus('Ready. Starting camera...');
+                console.log("Scanner: AI Matcher ready");
+                setIsAIReady(true);
             }
         };
 
-        init();
+        initAI();
+        return () => { isMounted = false; };
     }, [employees]);
 
+    // 2. Manage Camera Stream
     useEffect(() => {
         startVideo();
         return () => stopVideo();
     }, [facingMode]);
 
+    // 3. Start scanning only when BOTH AI and Camera are ready
+    useEffect(() => {
+        if (isAIReady && stream && videoRef.current) {
+            console.log("Scanner: Both AI and Camera ready. Starting loop...");
+            startScanning();
+        }
+    }, [isAIReady, stream]);
+
     const startVideo = async () => {
-        stopVideo(); // Ensure previous stream is stopped
+        stopVideo();
+        console.log("Scanner: Requesting camera access...");
         try {
             const currentStream = await navigator.mediaDevices.getUserMedia({
                 video: { facingMode: facingMode }
             });
+            console.log("Scanner: Camera access granted");
             setStream(currentStream);
             if (videoRef.current) {
                 videoRef.current.srcObject = currentStream;
                 videoRef.current.onloadedmetadata = () => {
-                    videoRef.current?.play();
-                    startScanning();
+                    videoRef.current?.play().catch(e => console.error("Video play failed:", e));
                 };
             }
         } catch (err) {
@@ -102,6 +120,8 @@ export default function AttendanceScanner({ siteId, employees }: AttendanceScann
 
     const startScanning = async () => {
         if (!videoRef.current || !canvasRef.current || !matcherRef.current) return;
+        if (scanningRef.current) return; // Prevent multiple concurrent loops
+
         scanningRef.current = true;
         setStatus('Scanning...');
 
@@ -151,29 +171,38 @@ export default function AttendanceScanner({ siteId, employees }: AttendanceScann
     };
 
     const handleMarkAttendance = async (employeeId: string, name: string) => {
-        // Simple memory debounce
-        if (lastMarked === employeeId) return;
+        // Immediate debounce using Ref
+        if (lastMarkedRef.current === employeeId) return;
 
-        setLastMarked(employeeId);
-        setStatus(`Marking attendance for ${name}...`);
+        lastMarkedRef.current = employeeId;
+        setStatus(`Matching ${name}...`);
 
         // Call server action
         const formData = new FormData();
         formData.append('employeeId', employeeId);
         formData.append('siteId', siteId);
-        formData.append('status', 'present');
+        formData.append('status', 'checked-in');
 
         try {
-            await markAttendance(formData);
-            setStatus(`✅ Marked Present: ${name}. Ready for next person...`);
-            // Reset last marked after 5 seconds to allow re-scan if needed? 
-            // Or keep it to prevent duplicates today.
-            setTimeout(() => setLastMarked(null), 10000);
+            const result = await markAttendance(formData);
+            if (result?.success) {
+                const actionType = result.type === 'in' ? 'Checked In' : 'Checked Out';
+                const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                setStatus(`✅ ${actionType} at ${now}: ${name}. Ready for next person...`);
+            } else if (result?.error) {
+                setStatus(`ℹ️ ${name}: ${result.error}`);
+            }
+
+            // Reset last marked after 30 seconds to allow re-scan or next person
+            setTimeout(() => {
+                if (lastMarkedRef.current === employeeId) {
+                    lastMarkedRef.current = null;
+                }
+            }, 30000);
         } catch (e) {
             console.error(e);
             setStatus(`Error marking ${name}`);
-            setStatus(`Error marking ${name}`);
-            setLastMarked(null);
+            lastMarkedRef.current = null;
         }
     };
 

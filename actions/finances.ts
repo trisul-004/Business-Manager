@@ -71,7 +71,7 @@ export async function deleteTransaction(transactionId: string, siteId: string) {
     const role = sessionClaims?.metadata?.role || 'manager';
 
     if (role !== 'supervisor') {
-        // Optional: restriction to supervisor or site manager
+        return { error: "Forbidden: Only supervisors can remove transactions." };
     }
 
     try {

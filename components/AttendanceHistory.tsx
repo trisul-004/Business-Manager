@@ -17,6 +17,8 @@ interface AttendanceRecord {
     employeeId: string;
     date: string;
     status: string;
+    checkInTime: string | null;
+    checkOutTime: string | null;
 }
 
 interface AttendanceHistoryProps {
@@ -250,32 +252,64 @@ export default function AttendanceHistory({ siteId, siteName, employees, initial
                             <div className="space-y-3">
                                 {employees.map(emp => {
                                     const record = selectedDayAttendance.find(a => a.employeeId === emp.id);
-                                    const status = record?.status;
+
+                                    const formatTime = (dateStr: string | null) => {
+                                        if (!dateStr) return '--:--';
+                                        return new Date(dateStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                    };
+
+                                    const calculateDuration = (start: string | null, end: string | null) => {
+                                        if (!start || !end) return null;
+                                        const diff = new Date(end).getTime() - new Date(start).getTime();
+                                        const hours = Math.floor(diff / (1000 * 60 * 60));
+                                        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                                        return `${hours}h ${minutes}m`;
+                                    };
+
+                                    const duration = record ? calculateDuration(record.checkInTime, record.checkOutTime) : null;
 
                                     return (
-                                        <div key={emp.id} className="flex items-center justify-between p-4 rounded-2xl border border-gray-50 hover:bg-gray-50 transition-colors">
+                                        <div key={emp.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-5 rounded-[2rem] border border-gray-100 hover:bg-gray-50 transition-all gap-4">
                                             <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center text-gray-500 font-bold">
+                                                <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 font-black text-lg shadow-sm border border-indigo-100">
                                                     {emp.name.charAt(0)}
                                                 </div>
                                                 <div>
-                                                    <p className="font-bold text-gray-900">{emp.name}</p>
-                                                    <p className="text-xs text-gray-400 font-bold uppercase tracking-wider">{emp.role}</p>
+                                                    <p className="font-extrabold text-gray-900">{emp.name}</p>
+                                                    <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">{emp.role}</p>
                                                 </div>
                                             </div>
 
-                                            {status ? (
-                                                <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${status === 'present'
-                                                    ? 'bg-green-50 text-green-700 border-green-100'
-                                                    : 'bg-red-50 text-red-700 border-red-100'
-                                                    }`}>
-                                                    {status}
+                                            <div className="flex items-center gap-2 sm:gap-6 ml-16 sm:ml-0">
+                                                <div className="text-center">
+                                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">In</p>
+                                                    <p className="text-xs font-bold text-gray-900 bg-gray-100 px-3 py-1.5 rounded-xl">{formatTime(record?.checkInTime || null)}</p>
                                                 </div>
-                                            ) : (
-                                                <div className="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-gray-50 text-gray-400 border border-gray-100">
-                                                    No Record
+                                                <div className="text-center">
+                                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Out</p>
+                                                    <p className="text-xs font-bold text-gray-900 bg-gray-100 px-3 py-1.5 rounded-xl">{formatTime(record?.checkOutTime || null)}</p>
                                                 </div>
-                                            )}
+                                                {duration && (
+                                                    <div className="text-center hidden xs:block">
+                                                        <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1">Total</p>
+                                                        <p className="text-xs font-black text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-xl border border-indigo-100">{duration}</p>
+                                                    </div>
+                                                )}
+                                                <div className="flex-1 sm:flex-none flex justify-end">
+                                                    {record ? (
+                                                        <div className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border shadow-sm ${record.status === 'present'
+                                                            ? 'bg-green-50 text-green-700 border-green-100 shadow-green-50'
+                                                            : 'bg-red-50 text-red-700 border-red-100 shadow-red-50'
+                                                            }`}>
+                                                            {record.status}
+                                                        </div>
+                                                    ) : (
+                                                        <div className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-gray-50 text-gray-400 border border-gray-100">
+                                                            Absent
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
                                         </div>
                                     );
                                 })}

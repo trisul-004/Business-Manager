@@ -59,9 +59,7 @@ export async function deleteAsset(assetId: string, siteId: string) {
     // Plan doesn't specify, but consistent with employees, let's allow supervisor for now.
     // Or allow the site manager too. For now let's stick to supervisor for deletion as a precaution.
     if (role !== 'supervisor') {
-        // Check if they are a manager of this site
-        // (Implementation omitted for brevity, focusing on supervisor for now)
-        // return { error: "Forbidden: Only supervisors can remove assets." };
+        return { error: "Forbidden: Only supervisors can remove assets." };
     }
 
     try {

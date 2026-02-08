@@ -89,7 +89,7 @@ export default async function FinancesPage({ params }: { params: Promise<{ siteI
                                 <Calculator className="w-8 h-8 text-indigo-600" />
                                 Transaction Logs
                             </h2>
-                            <TransactionList transactions={transactions as any} siteId={siteId} />
+                            <TransactionList transactions={transactions as any} siteId={siteId} role={role} />
                         </div>
                     </div>
                 </div>

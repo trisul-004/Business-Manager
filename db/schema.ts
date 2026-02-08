@@ -28,6 +28,8 @@ export const attendance = pgTable('attendance', {
   employeeId: uuid('employee_id').references(() => employees.id).notNull(),
   date: date('date').notNull(), // The day this attendance is for
   status: text('status').notNull(), // e.g., 'present', 'absent'
+  checkInTime: timestamp('check_in_time'),
+  checkOutTime: timestamp('check_out_time'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 }, (table) => ({
   onePerDay: uniqueIndex('one_per_day_idx').on(table.employeeId, table.date),

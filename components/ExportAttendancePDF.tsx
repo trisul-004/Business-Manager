@@ -14,6 +14,8 @@ interface AttendanceRecord {
     employeeId: string;
     date: string;
     status: string;
+    checkInTime?: string | null;
+    checkOutTime?: string | null;
 }
 
 interface ExportAttendancePDFProps {
@@ -38,21 +40,29 @@ export default function ExportAttendancePDF({ siteName, monthName, year, employe
         // Group attendance by employee for the table
         const tableData = employees.map(emp => {
             const empRecords = attendance.filter(a => a.employeeId === emp.id);
+            const todayRecord = empRecords.find(r => r.date === new Date().toISOString().split('T')[0]); // Example: for simple reports
+
+            const formatTime = (dateStr: string | undefined | null) => {
+                if (!dateStr) return '--:--';
+                return new Date(dateStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            };
+
             const presentDays = empRecords.filter(r => r.status === 'present').length;
-            const absentDays = empRecords.filter(r => r.status === 'absent').length;
+            const latestIn = empRecords.length > 0 ? formatTime(empRecords[empRecords.length - 1].checkInTime) : '--:--';
+            const latestOut = empRecords.length > 0 ? formatTime(empRecords[empRecords.length - 1].checkOutTime) : '--:--';
 
             return [
                 emp.name,
                 emp.role,
                 presentDays.toString(),
-                absentDays.toString(),
-                (presentDays + absentDays).toString() // Total logged
+                latestIn,
+                latestOut,
             ];
         });
 
         autoTable(doc, {
             startY: 45,
-            head: [['Employee Name', 'Role', 'Days Present', 'Days Absent', 'Total Logged']],
+            head: [['Employee Name', 'Role', 'Days Present', 'Latest In', 'Latest Out']],
             body: tableData,
             theme: 'grid',
             headStyles: { fillColor: [79, 70, 229] }, // Indigo 600

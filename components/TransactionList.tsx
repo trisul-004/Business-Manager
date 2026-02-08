@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { IndianRupee, Trash2, Calendar, FileText, ArrowUpCircle, ArrowDownCircle, Search, Filter } from 'lucide-react';
+import { IndianRupee, Trash2, Calendar, FileText, ArrowUpCircle, ArrowDownCircle, Search, Filter, Info } from 'lucide-react';
 import { deleteTransaction } from '@/actions/finances';
 
 interface Transaction {
@@ -18,9 +18,10 @@ interface Transaction {
 interface TransactionListProps {
     transactions: Transaction[];
     siteId: string;
+    role: string;
 }
 
-export default function TransactionList({ transactions, siteId }: TransactionListProps) {
+export default function TransactionList({ transactions, siteId, role }: TransactionListProps) {
     const [isDeleting, setIsDeleting] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -118,14 +119,20 @@ export default function TransactionList({ transactions, siteId }: TransactionLis
                                         </div>
                                     </td>
                                     <td className="px-6 py-5 text-center">
-                                        <button
-                                            onClick={() => handleDelete(t.id)}
-                                            disabled={isDeleting === t.id}
-                                            className="p-2.5 text-gray-300 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
-                                            title="Delete Record"
-                                        >
-                                            <Trash2 className={`w-5 h-5 ${isDeleting === t.id ? 'animate-pulse' : ''}`} />
-                                        </button>
+                                        {role === 'supervisor' ? (
+                                            <button
+                                                onClick={() => handleDelete(t.id)}
+                                                disabled={isDeleting === t.id}
+                                                className="p-2.5 text-gray-300 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
+                                                title="Delete Record"
+                                            >
+                                                <Trash2 className={`w-5 h-5 ${isDeleting === t.id ? 'animate-pulse' : ''}`} />
+                                            </button>
+                                        ) : (
+                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
+                                                Only Supervisor Access
+                                            </span>
+                                        )}
                                     </td>
                                 </tr>
                             ))}
@@ -160,14 +167,21 @@ export default function TransactionList({ transactions, siteId }: TransactionLis
                             )}
 
                             <div className="flex justify-end">
-                                <button
-                                    onClick={() => handleDelete(t.id)}
-                                    disabled={isDeleting === t.id}
-                                    className="flex items-center gap-2 px-4 py-2 text-red-600 font-black text-[10px] uppercase tracking-widest bg-red-50 rounded-xl active:scale-95 transition-all"
-                                >
-                                    <Trash2 className="w-3.5 h-3.5" />
-                                    Delete Record
-                                </button>
+                                {role === 'supervisor' ? (
+                                    <button
+                                        onClick={() => handleDelete(t.id)}
+                                        disabled={isDeleting === t.id}
+                                        className="flex items-center gap-2 px-4 py-2 text-red-600 font-black text-[10px] uppercase tracking-widest bg-red-50 rounded-xl active:scale-95 transition-all"
+                                    >
+                                        <Trash2 className="w-3.5 h-3.5" />
+                                        Delete Record
+                                    </button>
+                                ) : (
+                                    <div className="flex items-center gap-2 px-4 py-2 text-gray-400 font-black text-[10px] uppercase tracking-widest bg-gray-50 rounded-xl border border-gray-100">
+                                        <Info className="w-3.5 h-3.5" />
+                                        Only Supervisor Access
+                                    </div>
+                                )}
                             </div>
                         </div>
                     ))}

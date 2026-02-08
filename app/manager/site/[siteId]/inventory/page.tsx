@@ -97,7 +97,7 @@ export default async function InventoryPage({ params }: { params: Promise<{ site
                                 </div>
                             </div>
 
-                            <AssetList assets={assets as any} siteId={siteId} />
+                            <AssetList assets={assets as any} siteId={siteId} role={role} />
                         </div>
                     </div>
                 </div>

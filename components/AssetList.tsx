@@ -18,9 +18,10 @@ interface Asset {
 interface AssetListProps {
     assets: Asset[];
     siteId: string;
+    role: string;
 }
 
-export default function AssetList({ assets, siteId }: AssetListProps) {
+export default function AssetList({ assets, siteId, role }: AssetListProps) {
     const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
     const handleDelete = async (assetId: string) => {
@@ -60,8 +61,8 @@ export default function AssetList({ assets, siteId }: AssetListProps) {
                             <img src={asset.imageUrl} alt={asset.name} className="w-full h-full object-cover" />
                             <div className="absolute top-4 left-4">
                                 <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 shadow-sm border backdrop-blur-md ${asset.type === 'machinery'
-                                        ? 'bg-orange-50/80 text-orange-700 border-orange-100'
-                                        : 'bg-blue-50/80 text-blue-700 border-blue-100'
+                                    ? 'bg-orange-50/80 text-orange-700 border-orange-100'
+                                    : 'bg-blue-50/80 text-blue-700 border-blue-100'
                                     }`}>
                                     {asset.type === 'machinery' ? <Construction className="w-3 h-3" /> : <Package className="w-3 h-3" />}
                                     {asset.type}
@@ -88,14 +89,16 @@ export default function AssetList({ assets, siteId }: AssetListProps) {
                                     </div>
                                 )}
                             </div>
-                            <button
-                                onClick={() => handleDelete(asset.id)}
-                                disabled={isDeleting === asset.id}
-                                className="p-2.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
-                                title="Delete Asset"
-                            >
-                                <Trash2 className={`w-5 h-5 ${isDeleting === asset.id ? 'animate-pulse' : ''}`} />
-                            </button>
+                            {role === 'supervisor' && (
+                                <button
+                                    onClick={() => handleDelete(asset.id)}
+                                    disabled={isDeleting === asset.id}
+                                    className="p-2.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
+                                    title="Delete Asset"
+                                >
+                                    <Trash2 className={`w-5 h-5 ${isDeleting === asset.id ? 'animate-pulse' : ''}`} />
+                                </button>
+                            )}
                         </div>
 
                         {asset.description && (

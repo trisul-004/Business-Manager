@@ -43,12 +43,18 @@ export default async function SiteDashboard({ params }: { params: Promise<{ site
     const todayAttendance = await getAttendanceToday(employeeIds);
 
     // Create a map for quick lookup
-    const attendanceMap = new Map<string, string>(todayAttendance.map((a: { employeeId: string; status: string }) => [a.employeeId, a.status]));
+    const attendanceMap = new Map<string, any>(todayAttendance.map((a: any) => [a.employeeId, a]));
+
+    const formatTime = (dateStr: string | null) => {
+        if (!dateStr) return '--:--';
+        return new Date(dateStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    };
 
     // Calculate Summary Stats
     const summary = {
         total: siteEmployees.length,
         present: todayAttendance.filter((a: { status: string }) => a.status === 'present').length,
+        checkedIn: todayAttendance.filter((a: { status: string }) => a.status === 'checked-in').length,
         absent: todayAttendance.filter((a: { status: string }) => a.status === 'absent').length,
         pending: siteEmployees.length - todayAttendance.length
     };
@@ -100,13 +106,6 @@ export default async function SiteDashboard({ params }: { params: Promise<{ site
                             <IndianRupee className="w-5 h-5 text-orange-500" />
                             <span className="sm:inline">Finances</span>
                         </Link>
-                        <Link
-                            href={`/manager/site/${siteId}/attendance`}
-                            className="col-span-2 sm:col-auto flex items-center justify-center gap-2 bg-indigo-600 text-white px-4 py-3 rounded-2xl hover:bg-indigo-700 transition-all active:scale-95 font-bold text-xs md:text-sm shadow-lg shadow-indigo-100"
-                        >
-                            <ScanFace className="w-5 h-5" />
-                            <span>Scan Face</span>
-                        </Link>
                         <div className="absolute top-4 right-4 sm:relative sm:top-auto sm:right-auto flex items-center">
                             <UserButton />
                         </div>
@@ -114,16 +113,21 @@ export default async function SiteDashboard({ params }: { params: Promise<{ site
                 </header>
 
                 {/* Daily Attendance Summary Card */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+                <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-10">
                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center">
                         <Users className="w-6 h-6 text-gray-400 mb-2" />
                         <span className="text-2xl font-black text-gray-900">{summary.total}</span>
                         <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Team Size</span>
                     </div>
+                    <div className="bg-blue-50/50 p-6 rounded-2xl shadow-sm border border-blue-100/50 flex flex-col items-center text-center group transition-colors hover:bg-blue-50">
+                        <ScanFace className="w-6 h-6 text-blue-600 mb-2" />
+                        <span className="text-2xl font-black text-blue-700">{summary.checkedIn}</span>
+                        <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">On Site</span>
+                    </div>
                     <div className="bg-green-50/50 p-6 rounded-2xl shadow-sm border border-green-100/50 flex flex-col items-center text-center group transition-colors hover:bg-green-50">
                         <CheckCircle2 className="w-6 h-6 text-green-600 mb-2" />
                         <span className="text-2xl font-black text-green-700">{summary.present}</span>
-                        <span className="text-[10px] font-bold text-green-600 uppercase tracking-widest">Present</span>
+                        <span className="text-[10px] font-bold text-green-600 uppercase tracking-widest">Completed</span>
                     </div>
                     <div className="bg-red-50/50 p-6 rounded-2xl shadow-sm border border-red-100/50 flex flex-col items-center text-center group transition-colors hover:bg-red-50">
                         <XCircle className="w-6 h-6 text-red-600 mb-2" />
@@ -133,7 +137,7 @@ export default async function SiteDashboard({ params }: { params: Promise<{ site
                     <div className="bg-indigo-50/50 p-6 rounded-2xl shadow-sm border border-indigo-100/50 flex flex-col items-center text-center group transition-colors hover:bg-indigo-50">
                         <Clock className="w-6 h-6 text-indigo-600 mb-2" />
                         <span className="text-2xl font-black text-indigo-700">{summary.pending}</span>
-                        <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Awaiting Status</span>
+                        <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Awaiting</span>
                     </div>
                 </div>
 
@@ -153,13 +157,22 @@ export default async function SiteDashboard({ params }: { params: Promise<{ site
                     <div className="lg:col-span-2">
                         <div className="bg-white p-6 md:p-8 rounded-[2.5rem] shadow-sm border border-gray-100 h-full">
                             <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-8">
-                                <h2 className="text-xl md:text-2xl font-black text-gray-900 flex items-center gap-2 leading-tight">
-                                    <Users className="w-6 h-6 text-indigo-600" />
-                                    Directory
-                                </h2>
-                                <span className="bg-gray-100 text-gray-500 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest w-fit">
-                                    {siteEmployees.length} Members
-                                </span>
+                                <div className="flex items-center gap-4">
+                                    <h2 className="text-xl md:text-2xl font-black text-gray-900 flex items-center gap-2 leading-tight">
+                                        <Users className="w-6 h-6 text-indigo-600" />
+                                        Directory
+                                    </h2>
+                                    <span className="bg-gray-100 text-gray-500 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest w-fit">
+                                        {siteEmployees.length} Members
+                                    </span>
+                                </div>
+                                <Link
+                                    href={`/manager/site/${siteId}/attendance`}
+                                    className="flex items-center justify-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-2xl hover:bg-indigo-700 transition-all active:scale-95 font-bold text-xs md:text-sm shadow-lg shadow-indigo-100 w-full sm:w-auto"
+                                >
+                                    <ScanFace className="w-5 h-5" />
+                                    <span>Scan Face</span>
+                                </Link>
                             </div>
 
                             <div className="grid gap-4">
@@ -169,64 +182,91 @@ export default async function SiteDashboard({ params }: { params: Promise<{ site
                                     </div>
                                 ) : (
                                     siteEmployees.map(emp => {
-                                        const status = attendanceMap.get(emp.id);
+                                        const record = attendanceMap.get(emp.id);
 
                                         return (
-                                            <div key={emp.id} className="group border border-gray-100 p-5 rounded-2xl hover:bg-white hover:shadow-md transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                                            <div key={emp.id} className="group border border-gray-100 p-5 rounded-3xl hover:bg-white hover:shadow-md transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                                                 <div className="flex items-center gap-4">
-                                                    <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-gray-700 font-bold text-lg shadow-sm">
+                                                    <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-indigo-50 to-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-lg shadow-sm border border-indigo-100">
                                                         {emp.name.charAt(0)}
                                                     </div>
                                                     <div>
-                                                        <h3 className="font-bold text-gray-900 text-lg">{emp.name}</h3>
-                                                        <p className="text-sm text-gray-500 font-medium">{emp.role}</p>
+                                                        <h3 className="font-bold text-gray-900 text-lg leading-tight">{emp.name}</h3>
+                                                        <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">{emp.role}</p>
                                                     </div>
                                                 </div>
 
-                                                <div className="flex items-center gap-4">
-                                                    {role === 'supervisor' && (
-                                                        <DeleteEmployeeButton
-                                                            employeeId={emp.id}
-                                                            employeeName={emp.name}
-                                                            siteId={siteId}
-                                                        />
+                                                <div className="flex items-center gap-6 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+                                                    {record && (
+                                                        <>
+                                                            <div className="text-center min-w-[60px]">
+                                                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">In</p>
+                                                                <p className="text-xs font-bold text-gray-900 bg-gray-100 px-3 py-1.5 rounded-xl border border-gray-200/50">
+                                                                    {formatTime(record.checkInTime)}
+                                                                </p>
+                                                            </div>
+                                                            <div className="text-center min-w-[60px]">
+                                                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Out</p>
+                                                                <p className="text-xs font-bold text-gray-900 bg-gray-100 px-3 py-1.5 rounded-xl border border-gray-200/50">
+                                                                    {formatTime(record.checkOutTime)}
+                                                                </p>
+                                                            </div>
+                                                        </>
                                                     )}
 
-                                                    <div className="flex items-center gap-3 w-full md:w-auto">
-                                                        {status ? (
-                                                            <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border font-bold text-sm ${status === 'present'
-                                                                ? 'bg-green-50 border-green-200 text-green-700'
-                                                                : 'bg-red-50 border-red-200 text-red-700'
-                                                                }`}>
-                                                                {status === 'present' ? <CheckCircle2 className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
-                                                                {String(status).toUpperCase()}
-                                                            </div>
-                                                        ) : (
-                                                            <div className="flex items-center gap-2 w-full">
-                                                                <form action={markAttendance} className="flex gap-2 w-full">
+                                                    <div className="flex items-center gap-4 flex-1 md:flex-none justify-end">
+                                                        {role === 'supervisor' && (
+                                                            <DeleteEmployeeButton
+                                                                employeeId={emp.id}
+                                                                employeeName={emp.name}
+                                                                siteId={siteId}
+                                                            />
+                                                        )}
+
+                                                        <div className="flex items-center gap-3">
+                                                            {record && (
+                                                                <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border font-black text-[10px] uppercase tracking-widest shadow-sm ${record.status === 'present'
+                                                                    ? 'bg-green-50 border-green-200 text-green-700'
+                                                                    : record.status === 'checked-in'
+                                                                        ? 'bg-blue-50 border-blue-200 text-blue-700'
+                                                                        : 'bg-red-50 border-red-200 text-red-700'
+                                                                    }`}>
+                                                                    {record.status === 'present' ? <CheckCircle2 className="w-3.5 h-3.5" /> : record.status === 'checked-in' ? <ScanFace className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />}
+                                                                    {record.status === 'checked-in' ? 'On Site' : record.status}
+                                                                </div>
+                                                            )}
+
+                                                            <div className="flex items-center gap-2">
+                                                                <form action={async (fd) => { 'use server'; await markAttendance(fd); }} className="flex gap-2">
                                                                     <input type="hidden" name="employeeId" value={emp.id} />
                                                                     <input type="hidden" name="siteId" value={siteId} />
-                                                                    <button
-                                                                        name="status"
-                                                                        value="present"
-                                                                        type="submit"
-                                                                        className="flex-1 md:flex-none flex items-center justify-center gap-1.5 px-4 py-2 bg-white border border-green-200 text-green-600 rounded-xl hover:bg-green-50 transition-colors font-bold text-xs shadow-sm"
-                                                                    >
-                                                                        <CheckCircle2 className="w-3.5 h-3.5" />
-                                                                        Present
-                                                                    </button>
-                                                                    <button
-                                                                        name="status"
-                                                                        value="absent"
-                                                                        type="submit"
-                                                                        className="flex-1 md:flex-none flex items-center justify-center gap-1.5 px-4 py-2 bg-white border border-red-200 text-red-600 rounded-xl hover:bg-red-50 transition-colors font-bold text-xs shadow-sm"
-                                                                    >
-                                                                        <XCircle className="w-3.5 h-3.5" />
-                                                                        Absent
-                                                                    </button>
+
+                                                                    {record?.status === 'checked-in' && role === 'supervisor' && (
+                                                                        <button
+                                                                            name="status"
+                                                                            value="present"
+                                                                            type="submit"
+                                                                            className="flex items-center justify-center gap-1.5 px-3 py-2 bg-white border border-green-200 text-green-600 rounded-xl hover:bg-green-50 transition-colors font-bold text-[10px] uppercase tracking-wider shadow-sm"
+                                                                        >
+                                                                            <CheckCircle2 className="w-3 h-3" />
+                                                                            Set Present
+                                                                        </button>
+                                                                    )}
+
+                                                                    {(!record || record.status !== 'absent') && (
+                                                                        <button
+                                                                            name="status"
+                                                                            value="absent"
+                                                                            type="submit"
+                                                                            className="flex items-center justify-center gap-1.5 px-3 py-2 bg-white border border-red-200 text-red-600 rounded-xl hover:bg-red-50 transition-colors font-bold text-[10px] uppercase tracking-wider shadow-sm"
+                                                                        >
+                                                                            <XCircle className="w-3 h-3" />
+                                                                            {record ? "Set Absent" : "Mark Absent"}
+                                                                        </button>
+                                                                    )}
                                                                 </form>
                                                             </div>
-                                                        )}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
