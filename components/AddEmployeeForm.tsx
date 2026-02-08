@@ -65,6 +65,25 @@ export default function AddEmployeeForm({ siteId }: { siteId: string }) {
                         required
                     />
                 </div>
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Aadhar Number</label>
+                    <input
+                        name="aadharNumber"
+                        type="text"
+                        placeholder="12-digit Aadhar Number"
+                        className="w-full rounded-xl border-gray-200 shadow-sm focus:border-green-500 focus:ring-green-500 py-3 px-4 bg-gray-50 text-gray-900 transition-all placeholder:text-gray-400"
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Bank Account Number</label>
+                    <input
+                        name="bankAccountNumber"
+                        type="text"
+                        placeholder="Account Number"
+                        className="w-full rounded-xl border-gray-200 shadow-sm focus:border-green-500 focus:ring-green-500 py-3 px-4 bg-gray-50 text-gray-900 transition-all placeholder:text-gray-400"
+                    />
+                </div>
 
                 <div className="border-t border-gray-100 pt-4">
                     <button

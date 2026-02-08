@@ -45,6 +45,12 @@ export async function createEmployee(formData: FormData) {
     const name = formData.get('name') as string;
     const role = formData.get('role') as string;
     const siteId = formData.get('siteId') as string;
+    const mobileNumber = formData.get('mobileNumber') as string;
+    const aadharNumber = formData.get('aadharNumber') as string;
+    const bankAccountNumber = formData.get('bankAccountNumber') as string;
+    const mothersName = formData.get('mothersName') as string;
+    const fathersName = formData.get('fathersName') as string;
+    const salaryPerDay = formData.get('salaryPerDay') as string;
     const faceDescriptor = formData.get('faceDescriptor') as string;
 
     if (!name || !role || !siteId) return { error: "Missing required fields" };
@@ -55,6 +61,12 @@ export async function createEmployee(formData: FormData) {
             name,
             role,
             siteId,
+            mobileNumber: mobileNumber || null,
+            aadharNumber: aadharNumber || null,
+            bankAccountNumber: bankAccountNumber || null,
+            mothersName: mothersName || null,
+            fathersName: fathersName || null,
+            salaryPerDay: salaryPerDay || null,
             faceDescriptor: faceDescriptor || null,
         });
 
@@ -99,5 +111,46 @@ export async function deleteEmployee(employeeId: string, siteId: string) {
     } catch (error: any) {
         console.error("FULL DELETE ERROR:", error);
         return { error: `Deletion failed: ${error.message || "Unknown error"}` };
+    }
+}
+
+export async function updateEmployee(formData: FormData) {
+    const id = formData.get('id') as string;
+    const name = formData.get('name') as string;
+    const role = formData.get('role') as string;
+    const mobileNumber = formData.get('mobileNumber') as string;
+    const aadharNumber = formData.get('aadharNumber') as string;
+    const bankAccountNumber = formData.get('bankAccountNumber') as string;
+    const mothersName = formData.get('mothersName') as string;
+    const fathersName = formData.get('fathersName') as string;
+    const salaryPerDay = formData.get('salaryPerDay') as string;
+    const siteId = formData.get('siteId') as string;
+
+    if (!id || !name || !role) return { error: "Missing required fields" };
+
+    try {
+        await db.update(employees)
+            .set({
+                name,
+                role,
+                mobileNumber: mobileNumber || null,
+                aadharNumber: aadharNumber || null,
+                bankAccountNumber: bankAccountNumber || null,
+                mothersName: mothersName || null,
+                fathersName: fathersName || null,
+                salaryPerDay: salaryPerDay || null,
+            })
+            .where(eq(employees.id, id));
+
+        if (siteId) {
+            revalidatePath(`/manager/site/${siteId}`);
+        }
+        revalidatePath('/manager');
+        revalidatePath('/supervisor');
+
+        return { success: true };
+    } catch (error: any) {
+        console.error("Failed to update employee:", error);
+        return { error: `Failed to update employee: ${error.message}` };
     }
 }
