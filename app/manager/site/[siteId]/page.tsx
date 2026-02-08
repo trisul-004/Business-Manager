@@ -11,6 +11,7 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft, Users, UserPlus, MapPin, CheckCircle2, XCircle, Clock, ScanFace, Calendar as CalendarIcon, Boxes, IndianRupee } from "lucide-react";
 import NotificationBell from "@/components/NotificationBell";
+import { formatTime } from "@/utils/format";
 
 export default async function SiteDashboard({ params }: { params: Promise<{ siteId: string }> }) {
     const { siteId } = await params;
@@ -46,9 +47,9 @@ export default async function SiteDashboard({ params }: { params: Promise<{ site
     // Create a map for quick lookup
     const attendanceMap = new Map<string, any>(todayAttendance.map((a: any) => [a.employeeId, a]));
 
-    const formatTime = (dateStr: string | null) => {
+    const formatTimeLocal = (dateStr: string | null) => {
         if (!dateStr) return '--:--';
-        return new Date(dateStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        return formatTime(dateStr);
     };
 
     // Calculate Summary Stats
@@ -199,18 +200,18 @@ export default async function SiteDashboard({ params }: { params: Promise<{ site
                                                 </div>
 
                                                 <div className="flex items-center gap-6 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
-                                                    {record && (
+                                                    {record && role !== 'supervisor' && (
                                                         <>
                                                             <div className="text-center min-w-[60px]">
                                                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">In</p>
                                                                 <p className="text-xs font-bold text-gray-900 bg-gray-100 px-3 py-1.5 rounded-xl border border-gray-200/50">
-                                                                    {formatTime(record.checkInTime)}
+                                                                    {formatTimeLocal(record.checkInTime)}
                                                                 </p>
                                                             </div>
                                                             <div className="text-center min-w-[60px]">
                                                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Out</p>
                                                                 <p className="text-xs font-bold text-gray-900 bg-gray-100 px-3 py-1.5 rounded-xl border border-gray-200/50">
-                                                                    {formatTime(record.checkOutTime)}
+                                                                    {formatTimeLocal(record.checkOutTime)}
                                                                 </p>
                                                             </div>
                                                         </>

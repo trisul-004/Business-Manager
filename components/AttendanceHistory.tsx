@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Users, CheckCircle
 import { getAttendanceRange } from '@/actions/attendance';
 import ExportAttendancePDF from '@/components/ExportAttendancePDF';
 import Link from 'next/link';
+import { formatDate as formatDateUtil, formatTime as formatTimeUtil } from '@/utils/format';
 
 interface Employee {
     id: string;
@@ -205,7 +206,7 @@ export default function AttendanceHistory({ siteId, siteName, employees, initial
 
                         {/* Selected Date Stats Overview */}
                         <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-                            <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-6">Daily Stats — {new Date(selectedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</h3>
+                            <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-6">Daily Stats — {formatDateUtil(selectedDate)}</h3>
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center p-3 bg-green-50 rounded-2xl border border-green-100">
                                     <div className="flex items-center gap-3">
@@ -244,7 +245,7 @@ export default function AttendanceHistory({ siteId, siteName, employees, initial
                             <div className="flex justify-between items-center mb-8">
                                 <div>
                                     <h2 className="text-2xl font-black text-gray-900 leading-tight">Attendance Logs</h2>
-                                    <p className="text-sm font-medium text-gray-500">{new Date(selectedDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                                    <p className="text-sm font-medium text-gray-500">{formatDateUtil(selectedDate)}</p>
                                 </div>
                                 {isLoading && <div className="animate-spin rounded-full h-5 w-5 border-2 border-indigo-600 border-t-transparent" />}
                             </div>
@@ -253,9 +254,9 @@ export default function AttendanceHistory({ siteId, siteName, employees, initial
                                 {employees.map(emp => {
                                     const record = selectedDayAttendance.find(a => a.employeeId === emp.id);
 
-                                    const formatTime = (dateStr: string | null) => {
+                                    const formatTimeLocal = (dateStr: string | null) => {
                                         if (!dateStr) return '--:--';
-                                        return new Date(dateStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                        return formatTimeUtil(dateStr);
                                     };
 
                                     const calculateDuration = (start: string | null, end: string | null) => {
@@ -283,11 +284,11 @@ export default function AttendanceHistory({ siteId, siteName, employees, initial
                                             <div className="flex items-center gap-2 sm:gap-6 ml-16 sm:ml-0">
                                                 <div className="text-center">
                                                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">In</p>
-                                                    <p className="text-xs font-bold text-gray-900 bg-gray-100 px-3 py-1.5 rounded-xl">{formatTime(record?.checkInTime || null)}</p>
+                                                    <p className="text-xs font-bold text-gray-900 bg-gray-100 px-3 py-1.5 rounded-xl">{formatTimeLocal(record?.checkInTime || null)}</p>
                                                 </div>
                                                 <div className="text-center">
                                                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Out</p>
-                                                    <p className="text-xs font-bold text-gray-900 bg-gray-100 px-3 py-1.5 rounded-xl">{formatTime(record?.checkOutTime || null)}</p>
+                                                    <p className="text-xs font-bold text-gray-900 bg-gray-100 px-3 py-1.5 rounded-xl">{formatTimeLocal(record?.checkOutTime || null)}</p>
                                                 </div>
                                                 {duration && (
                                                     <div className="text-center hidden xs:block">

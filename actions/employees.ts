@@ -48,6 +48,7 @@ export async function createEmployee(formData: FormData) {
     const faceDescriptor = formData.get('faceDescriptor') as string;
 
     if (!name || !role || !siteId) return { error: "Missing required fields" };
+    if (!faceDescriptor || faceDescriptor === '[]') return { error: "Facial recognition data is required to add an employee." };
 
     try {
         await db.insert(employees).values({

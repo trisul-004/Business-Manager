@@ -73,7 +73,7 @@ export default function AddEmployeeForm({ siteId }: { siteId: string }) {
                         className="flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-700 mb-3"
                     >
                         {showCamera ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                        {faceDescriptor ? 'Update Face Data' : 'Register Face (Recommended)'}
+                        {faceDescriptor ? 'Update Face Data' : 'Register Face (Required)'}
                     </button>
 
                     {showCamera && (
@@ -84,9 +84,13 @@ export default function AddEmployeeForm({ siteId }: { siteId: string }) {
                         </div>
                     )}
 
-                    {faceDescriptor && (
+                    {faceDescriptor ? (
                         <div className="text-xs text-green-600 font-bold mb-2 flex items-center gap-1">
                             ✓ Face data ready to submit
+                        </div>
+                    ) : (
+                        <div className="text-xs text-amber-600 font-bold mb-2 flex items-center gap-1">
+                            ⚠ Face registration required to continue
                         </div>
                     )}
                 </div>
@@ -99,8 +103,8 @@ export default function AddEmployeeForm({ siteId }: { siteId: string }) {
 
                 <button
                     type="submit"
-                    disabled={isSubmitting}
-                    className="w-full bg-gradient-to-r from-green-600 to-teal-600 text-white py-3 px-6 rounded-xl hover:from-green-700 hover:to-teal-700 transition-all shadow-md font-medium text-lg transform hover:-translate-y-0.5 disabled:opacity-50 disabled:transform-none"
+                    disabled={isSubmitting || !faceDescriptor}
+                    className="w-full bg-gradient-to-r from-green-600 to-teal-600 text-white py-3 px-6 rounded-xl hover:from-green-700 hover:to-teal-700 transition-all shadow-md font-medium text-lg transform hover:-translate-y-0.5 disabled:opacity-50 disabled:grayscale disabled:transform-none"
                 >
                     {isSubmitting ? 'Adding...' : 'Add Employee'}
                 </button>

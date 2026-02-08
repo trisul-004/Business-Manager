@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Bell, Check, Info, Users, Package, Calculator, X } from 'lucide-react';
 import { getNotifications, markNotificationAsRead } from '@/actions/notifications';
+import { formatTime } from '@/utils/format';
 
 interface Notification {
     id: string;
@@ -108,7 +109,7 @@ export default function NotificationBell({ siteId }: { siteId: string }) {
                                         <h4 className="text-xs font-black text-gray-900 mb-0.5 truncate">{n.title}</h4>
                                         <p className="text-[11px] text-gray-500 font-medium leading-relaxed mb-1.5">{n.message}</p>
                                         <span className="text-[9px] text-gray-400 font-black uppercase tracking-widest">
-                                            {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            {formatTime(n.createdAt)}
                                         </span>
                                     </div>
                                     {n.isRead === 'false' && (

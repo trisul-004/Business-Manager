@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Package, Construction, Trash2, ExternalLink, Box, Tag, Calendar, Info } from 'lucide-react';
 import { deleteAsset } from '@/actions/assets';
+import { formatDate } from '@/utils/format';
 
 interface Asset {
     id: string;
@@ -111,7 +112,7 @@ export default function AssetList({ assets, siteId, role }: AssetListProps) {
                         <div className="mt-auto pt-4 border-t border-gray-100 flex justify-between items-center text-[10px] font-black text-gray-400 uppercase tracking-widest">
                             <div className="flex items-center gap-1.5">
                                 <Calendar className="w-3.5 h-3.5" />
-                                Added {new Date(asset.createdAt).toLocaleDateString()}
+                                Added {formatDate(asset.createdAt)}
                             </div>
                             <div className="flex items-center gap-1 group cursor-default">
                                 ID: {asset.id.slice(0, 8)}

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { IndianRupee, Trash2, Calendar, FileText, ArrowUpCircle, ArrowDownCircle, Search, Filter, Info } from 'lucide-react';
 import { deleteTransaction } from '@/actions/finances';
+import { formatDate, formatTime } from '@/utils/format';
 
 interface Transaction {
     id: string;
@@ -91,8 +92,8 @@ export default function TransactionList({ transactions, siteId, role }: Transact
                                 <tr key={t.id} className="hover:bg-gray-50/50 transition-colors group">
                                     <td className="px-6 py-5">
                                         <div className="flex flex-col">
-                                            <span className="font-bold text-gray-900">{new Date(t.date).toLocaleDateString()}</span>
-                                            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-tight">{new Date(t.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                            <span className="font-bold text-gray-900">{formatDate(t.date)}</span>
+                                            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-tight">{formatTime(t.createdAt)}</span>
                                         </div>
                                     </td>
                                     <td className="px-6 py-5">
@@ -151,7 +152,7 @@ export default function TransactionList({ transactions, siteId, role }: Transact
                                         <span className="font-black text-gray-900 leading-none">{t.category}</span>
                                     </div>
                                     <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
-                                        {new Date(t.date).toLocaleDateString()} • {new Date(t.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        {formatDate(t.date)} • {formatTime(t.createdAt)}
                                     </span>
                                 </div>
                                 <div className={`font-black text-lg flex items-center ${t.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
