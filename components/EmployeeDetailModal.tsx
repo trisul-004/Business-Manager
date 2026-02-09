@@ -56,13 +56,13 @@ export default function EmployeeDetailModal({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white w-full max-w-2xl rounded-[2.5rem] shadow-2xl border border-gray-100 overflow-hidden animate-in zoom-in-95 duration-200">
-                <div className="relative p-6 md:p-8">
+            <div className="bg-white w-full max-w-2xl rounded-[2rem] md:rounded-[2.5rem] shadow-2xl border border-gray-100 flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
+                <div className="relative p-5 md:p-8 overflow-y-auto custom-scrollbar">
                     <button
                         onClick={onClose}
-                        className="absolute top-6 right-6 p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
+                        className="absolute top-4 right-4 md:top-6 md:right-6 p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600 z-10"
                     >
-                        <X className="w-6 h-6" />
+                        <X className="w-5 h-5 md:w-6 md:h-6" />
                     </button>
 
                     <div className="flex items-center gap-4 mb-8">
@@ -171,14 +171,14 @@ export default function EmployeeDetailModal({
 
                         {status && (
                             <div className={`p-4 rounded-2xl text-sm font-bold flex items-center gap-3 animate-in slide-in-from-top-2 duration-300 ${status.type === 'success'
-                                    ? 'bg-green-50 text-green-700 border border-green-100'
-                                    : 'bg-red-50 text-red-700 border border-red-100'
+                                ? 'bg-green-50 text-green-700 border border-green-100'
+                                : 'bg-red-50 text-red-700 border border-red-100'
                                 }`}>
                                 {status.type === 'success' ? '✓' : '⚠'} {status.message}
                             </div>
                         )}
 
-                        <div className="flex items-center justify-between gap-4 pt-4 border-t border-gray-100">
+                        <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-3 sm:gap-4 pt-4 border-t border-gray-100">
                             {isEditing ? (
                                 <>
                                     <button

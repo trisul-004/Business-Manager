@@ -96,76 +96,77 @@ export default function EmployeeDirectory({
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-6 w-full md:w-auto overflow-x-auto pb-2 md:pb-0" onClick={(e) => e.stopPropagation()}>
+                                <div className="w-full md:w-auto flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-3 md:mt-0" onClick={(e) => e.stopPropagation()}>
                                     {record && role !== 'supervisor' && (
-                                        <>
-                                            <div className="text-center min-w-[60px]">
-                                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">In</p>
-                                                <p className="text-xs font-bold text-gray-900 bg-gray-100 px-3 py-1.5 rounded-xl border border-gray-200/50">
+                                        <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start bg-gray-50/50 p-2 rounded-xl border border-gray-100/50 sm:bg-transparent sm:border-0 sm:p-0">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">In</span>
+                                                <span className="text-xs font-bold text-gray-900 bg-white sm:bg-gray-100 px-2 py-1 rounded-lg border border-gray-200/50">
                                                     {formatTimeLocal(record.checkInTime)}
-                                                </p>
+                                                </span>
                                             </div>
-                                            <div className="text-center min-w-[60px]">
-                                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Out</p>
-                                                <p className="text-xs font-bold text-gray-900 bg-gray-100 px-3 py-1.5 rounded-xl border border-gray-200/50">
+                                            <div className="w-px h-4 bg-gray-200 sm:hidden"></div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Out</span>
+                                                <span className="text-xs font-bold text-gray-900 bg-white sm:bg-gray-100 px-2 py-1 rounded-lg border border-gray-200/50">
                                                     {formatTimeLocal(record.checkOutTime)}
-                                                </p>
+                                                </span>
                                             </div>
-                                        </>
+                                        </div>
                                     )}
 
-                                    <div className="flex items-center gap-4 flex-1 md:flex-none justify-end">
-                                        {role === 'supervisor' && (
-                                            <DeleteEmployeeButton
-                                                employeeId={emp.id}
-                                                employeeName={emp.name}
-                                                siteId={siteId}
-                                            />
-                                        )}
-
+                                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between w-full md:w-auto gap-3">
                                         <div className="flex items-center gap-3">
+                                            {role === 'supervisor' && (
+                                                <DeleteEmployeeButton
+                                                    employeeId={emp.id}
+                                                    employeeName={emp.name}
+                                                    siteId={siteId}
+                                                />
+                                            )}
+
                                             {record && (
-                                                <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border font-black text-[10px] uppercase tracking-widest shadow-sm ${record.status === 'present'
+                                                <div className={`flex items-center justify-center gap-2 px-3 py-2 rounded-xl border font-black text-[10px] uppercase tracking-widest shadow-sm flex-1 sm:flex-none ${record.status === 'present'
                                                     ? 'bg-green-50 border-green-200 text-green-700'
                                                     : record.status === 'checked-in'
                                                         ? 'bg-blue-50 border-blue-200 text-blue-700'
                                                         : 'bg-red-50 border-red-200 text-red-700'
                                                     }`}>
                                                     {record.status === 'present' ? <CheckCircle2 className="w-3.5 h-3.5" /> : record.status === 'checked-in' ? <ScanFace className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />}
-                                                    {record.status === 'checked-in' ? 'On Site' : record.status}
+                                                    <span className="whitespace-nowrap">{record.status === 'checked-in' ? 'On Site' : record.status}</span>
                                                 </div>
                                             )}
+                                        </div>
 
-                                            <div className="flex items-center gap-2">
-                                                <form action={async (fd) => { await markAttendance(fd); }} className="flex gap-2">
-                                                    <input type="hidden" name="employeeId" value={emp.id} />
-                                                    <input type="hidden" name="siteId" value={siteId} />
+                                        <div className="flex items-center gap-2 w-full sm:w-auto">
+                                            <form action={async (fd) => { await markAttendance(fd); }} className="flex gap-2 w-full sm:w-auto">
+                                                <input type="hidden" name="employeeId" value={emp.id} />
+                                                <input type="hidden" name="siteId" value={siteId} />
 
-                                                    {record?.status === 'checked-in' && role === 'supervisor' && (
-                                                        <button
-                                                            name="status"
-                                                            value="present"
-                                                            type="submit"
-                                                            className="flex items-center justify-center gap-1.5 px-3 py-2 bg-white border border-green-200 text-green-600 rounded-xl hover:bg-green-50 transition-colors font-bold text-[10px] uppercase tracking-wider shadow-sm"
-                                                        >
-                                                            <CheckCircle2 className="w-3 h-3" />
-                                                            Set Present
-                                                        </button>
-                                                    )}
+                                                {record?.status === 'checked-in' && role === 'supervisor' && (
+                                                    <button
+                                                        name="status"
+                                                        value="present"
+                                                        type="submit"
+                                                        className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 bg-white border border-green-200 text-green-600 rounded-xl hover:bg-green-50 transition-colors font-bold text-[10px] uppercase tracking-wider shadow-sm min-h-[38px] whitespace-nowrap"
+                                                    >
+                                                        <CheckCircle2 className="w-3 h-3" />
+                                                        <span className="inline">Set Present</span>
+                                                    </button>
+                                                )}
 
-                                                    {(!record || record.status !== 'absent') && (
-                                                        <button
-                                                            name="status"
-                                                            value="absent"
-                                                            type="submit"
-                                                            className="flex items-center justify-center gap-1.5 px-3 py-2 bg-white border border-red-200 text-red-600 rounded-xl hover:bg-red-50 transition-colors font-bold text-[10px] uppercase tracking-wider shadow-sm"
-                                                        >
-                                                            <XCircle className="w-3 h-3" />
-                                                            {record ? "Set Absent" : "Mark Absent"}
-                                                        </button>
-                                                    )}
-                                                </form>
-                                            </div>
+                                                {(!record || record.status !== 'absent') && (
+                                                    <button
+                                                        name="status"
+                                                        value="absent"
+                                                        type="submit"
+                                                        className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 bg-white border border-red-200 text-red-600 rounded-xl hover:bg-red-50 transition-colors font-bold text-[10px] uppercase tracking-wider shadow-sm min-h-[38px] whitespace-nowrap"
+                                                    >
+                                                        <XCircle className="w-3 h-3" />
+                                                        <span className="inline">{record ? "Set Absent" : "Mark Absent"}</span>
+                                                    </button>
+                                                )}
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
