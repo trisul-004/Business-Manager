@@ -78,7 +78,7 @@ export default function NotificationBell({ siteId }: { siteId: string }) {
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-3 w-80 bg-white border border-gray-100 rounded-[2rem] shadow-2xl z-50 overflow-hidden transform origin-top-right transition-all">
+                <div className="absolute right-0 mt-3 w-[85vw] sm:w-80 max-w-[320px] bg-white border border-gray-100 rounded-[2rem] shadow-2xl z-50 overflow-hidden transform origin-top-right transition-all">
                     <div className="p-5 border-b border-gray-50 flex items-center justify-between bg-white">
                         <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest">Recent Activity</h3>
                         {unreadCount > 0 && (

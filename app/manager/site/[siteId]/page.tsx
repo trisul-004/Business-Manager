@@ -101,7 +101,7 @@ export default async function SiteDashboard({ params }: { params: Promise<{ site
                             <IndianRupee className="w-5 h-5 text-orange-500" />
                             <span className="sm:inline">Finances</span>
                         </Link>
-                        <div className="absolute top-4 right-4 sm:relative sm:top-auto sm:right-auto flex items-center gap-3">
+                        <div className="flex items-center justify-end sm:justify-start gap-3">
                             <NotificationBell siteId={siteId} />
                             <UserButton />
                         </div>

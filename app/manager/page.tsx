@@ -31,13 +31,13 @@ export default async function ManagerPortal() {
     return (
         <div className="min-h-screen bg-gray-50 p-8 font-sans">
             <div className="max-w-5xl mx-auto">
-                <header className="flex justify-between items-center mb-12 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <header className="flex flex-row justify-between items-start md:items-center gap-4 mb-8 md:mb-12 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                     <div>
-                        <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Manager Portal</h1>
-                        <p className="text-gray-500 mt-1">Select a site to manage its specific operations</p>
+                        <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight">Manager Portal</h1>
+                        <p className="text-sm md:text-base text-gray-500 mt-1">Select a site to manage its specific operations</p>
                     </div>
-                    <div className="flex items-center gap-4">
-                        <span className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-sm font-medium">Manager Access</span>
+                    <div className="flex flex-col-reverse md:flex-row items-end md:items-center gap-2 md:gap-3">
+                        <span className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-[10px] md:text-sm font-medium whitespace-nowrap">Manager Access</span>
                         <UserButton />
                     </div>
                 </header>

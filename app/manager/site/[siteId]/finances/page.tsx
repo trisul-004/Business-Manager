@@ -11,7 +11,7 @@ import FinanceSummary from "@/components/FinanceSummary";
 import ExportFinancePDF from "@/components/ExportFinancePDF";
 import { getTransactions } from "@/actions/finances";
 import { finances as financesTable } from '@/db/schema';
-import NotificationBell from "@/components/NotificationBell";
+
 
 export default async function FinancesPage({ params }: { params: Promise<{ siteId: string }> }) {
     const { siteId } = await params;
@@ -71,7 +71,6 @@ export default async function FinancesPage({ params }: { params: Promise<{ siteI
                     </div>
 
                     <div className="w-full lg:w-auto flex items-center gap-3">
-                        <NotificationBell siteId={siteId} />
                         <ExportFinancePDF transactions={transactions as any} siteName={site.name} />
                     </div>
                 </header>

@@ -11,16 +11,16 @@ export default async function SupervisorDashboard() {
     return (
         <div className="min-h-screen bg-gray-50 p-8 font-sans">
             <div className="max-w-7xl mx-auto">
-                <header className="flex justify-between items-center mb-12 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <header className="flex flex-row justify-between items-start md:items-center gap-4 mb-8 md:mb-12 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                     <div>
-                        <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight flex items-center gap-3">
-                            <ShieldCheck className="w-9 h-9 text-indigo-600" />
+                        <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight flex items-center gap-2 md:gap-3">
+                            <ShieldCheck className="w-7 h-7 md:w-9 md:h-9 text-indigo-600" />
                             Supervisor Portal
                         </h1>
-                        <p className="text-gray-500 mt-1">Full oversight of sites, managers, and personnel</p>
+                        <p className="text-sm md:text-base text-gray-500 mt-1">Full oversight of sites, managers, and personnel</p>
                     </div>
-                    <div className="flex items-center gap-4">
-                        <span className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-sm font-medium">Supervisor Access</span>
+                    <div className="flex flex-col-reverse md:flex-row items-end md:items-center gap-2 md:gap-3">
+                        <span className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-[10px] md:text-sm font-medium whitespace-nowrap">Supervisor Access</span>
                         <UserButton />
                     </div>
                 </header>
